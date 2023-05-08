@@ -12,8 +12,8 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RoutesConfiguration {
 
     @Bean
-    public RouterFunction<ServerResponse> getAllFlights() {
-        return route(GET("/all"), FlightsHandler::getAllFlights);
+    public RouterFunction<ServerResponse> getAllFlights(FlightsHandler handler) {
+        return route(GET("/all"), handler::getAllFlights);
     }
 
 }

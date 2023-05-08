@@ -16,14 +16,14 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 import static org.springframework.web.reactive.function.server.ServerResponse.status;
 
 @Component
-public abstract class FlightsHandler {
+public class FlightsHandler {
 
     @Value("${opensky.username}")
-    private static String USERNAME;
+    private String USERNAME;
     @Value("${opensky.password}")
-    private static String PASSWORD;
+    private String PASSWORD;
 
-    public static Mono<ServerResponse> getAllFlights(ServerRequest request) {
+    public Mono<ServerResponse> getAllFlights(ServerRequest request) {
         OpenSkyApi api = new OpenSkyApi(USERNAME, PASSWORD);
         try {
             // Current flights on Switzerland area
