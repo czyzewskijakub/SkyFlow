@@ -9,7 +9,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
-public class Routes {
+public class RoutesConfiguration {
 
     @Bean
     public RouterFunction<ServerResponse> getAllFlights() {
