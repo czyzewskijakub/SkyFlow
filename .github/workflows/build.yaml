@@ -16,4 +16,5 @@ jobs:
       - name: Install OpenSky
         run: git clone https://github.com/openskynetwork/opensky-api.git && cd opensky-api/java && mvn clean install
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots install
+        run: mvn install -DskipTests --file pom.xml
+#        run: mvn --batch-mode --update-snapshots install

@@ -1,3 +1,28 @@
+spring:
+    application:
+      name: SkyFlow
+    datasource:
+      username:
+      password:
+      url: jdbc:postgresql://localhost:5432/skyflow
+      driver-class-name: org.postgresql.Driver
+    jpa:
+      hibernate:
+        ddl-auto: update
+      show-sql: true
+      defer-datasource-initialization: true
+      properties:
+        hibernate:
+          format_sql: true
+      database: postgresql
+      database-platform: org.hibernate.dialect.PostgreSQLDialect
+jwt:
+  variables:
+    jwtSecret:
+    jwtExpirationMs:
 opensky:
   username:
   password:
+springdoc:
+  swagger-ui:
+    use-root-path: true
