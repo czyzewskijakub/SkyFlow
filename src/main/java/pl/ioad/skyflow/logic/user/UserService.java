@@ -1,5 +1,6 @@
 package pl.ioad.skyflow.logic.user;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -9,7 +10,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.database.repository.UserRepository;
+import pl.ioad.skyflow.logic.exception.type.AuthException;
+import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
+import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
+import pl.ioad.skyflow.logic.exception.type.InvalidDataException;
+import pl.ioad.skyflow.logic.user.dto.Mapper;
+import pl.ioad.skyflow.logic.user.dto.UserDto;
+import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
+import pl.ioad.skyflow.logic.user.payload.request.RegisterRequest;
+import pl.ioad.skyflow.logic.user.payload.response.AuthorizationResponse;
 import pl.ioad.skyflow.logic.user.security.jwt.JwtUtils;
+
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Service
 @RequiredArgsConstructor
@@ -19,51 +31,66 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder encoder;
+    private final Mapper mapper = new Mapper();
 
-    public User register(String firstName, String lastName, String email, String password, String profilePictureUrl) {
-        if (validateRegisterInput(email, password)) {
-            System.out.println("Wrong register input or email is taken");
+    public UserDto register(RegisterRequest request) {
+        if (!request.getEmail().contains("@") && !request.getEmail().contains(".")) {
+            throw new InvalidDataException("Wrong register input");
+        } else if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ForbiddenException("Email is taken");
         }
-        return userRepository.save(User.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .passwordHash(encoder.encode(password))
-                .profilePictureUrl(profilePictureUrl)
+
+        User user = userRepository.save(User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .passwordHash(encoder.encode(request.getPassword()))
+                .profilePictureUrl(request.getPictureUrl())
                 .isAdmin(false)
                 .build());
+        return mapper.mapUser(user);
 
     }
 
-    public User registerAdmin(String firstName, String lastName, String email, String password, String profilePictureUrl) {
-        if (validateRegisterInput(email, password)) {
-            System.out.println("Wrong register input or email is taken");
-        }
-        return userRepository.save(User.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .email(email)
-                .passwordHash(encoder.encode(password))
-                .profilePictureUrl(profilePictureUrl)
+    public UserDto registerAdmin(RegisterRequest request, HttpServletRequest http) {
+        String token = http.getHeader("Authorization");
+        if (token == null)
+            throw new ForbiddenException("You are not authorized");
+        token = token.substring("Bearer ".length());
+        var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
+        if (user.isPresent() && !user.get().getIsAdmin())
+            throw new InvalidBusinessArgumentException("You cannot register new admin as standard user");
+        else if (!request.getEmail().contains("@") && !request.getEmail().contains("."))
+            throw new InvalidDataException("Wrong register input");
+        else if (userRepository.findByEmail(request.getEmail()).isPresent())
+            throw new ForbiddenException("Email is taken");
+
+        User newUser = userRepository.save(User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .email(request.getEmail())
+                .passwordHash(encoder.encode(request.getPassword()))
+                .profilePictureUrl(request.getPictureUrl())
                 .isAdmin(true)
                 .build());
+        return mapper.mapUser(newUser);
     }
 
-    public String login(String email, String password) {
+    public AuthorizationResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {
+        if (httpServletRequest.getHeader(AUTHORIZATION) != null)
+            throw new AuthException("U cannot log in while u are logged in");
+        else if (userRepository.findByEmail(request.getEmail()).isEmpty())
+            throw new ForbiddenException("Email is taken");
+
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password));
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(), request.getPassword()
+                )
+        );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return jwtUtils.generateJwtToken(authentication);
+
+        String token = jwtUtils.generateJwtToken(authentication);
+        return new AuthorizationResponse(token);
     }
 
-    public User getUserByToken(String token) {
-        var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
-        return user.orElse(null);
-    }
-
-    private boolean validateRegisterInput(String email, String password) {
-        if (!email.contains("@") && !email.contains(".") || password == null) {
-            return true;
-        } else return userRepository.findByEmail(email).isPresent();
-    }
 }

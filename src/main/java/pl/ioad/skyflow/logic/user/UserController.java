@@ -7,31 +7,29 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import pl.ioad.skyflow.database.model.User;
-import pl.ioad.skyflow.logic.user.dto.Mapper;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.ioad.skyflow.logic.user.dto.UserDto;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
 import pl.ioad.skyflow.logic.user.payload.request.RegisterRequest;
 import pl.ioad.skyflow.logic.user.payload.response.AuthorizationResponse;
 
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    @Autowired
-    private UserService userService;
-    private static final Mapper mapper = new Mapper();
+
+    private final UserService userService;
 
 
     /**
      * register new User
      *
-     * @param registerRequest - {@link RegisterRequest}
-     * @param httpServletRequest - HTTP Servlet Request
+     * @param request - {@link RegisterRequest}
      * @return {@link UserDto}
      */
     @ApiOperation(value = "Register new user")
@@ -46,42 +44,25 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<UserDto> register(@ApiParam(name = "Registration request body",
                                                         value = "Body of the request")
-                                                @Valid @RequestBody RegisterRequest registerRequest,
-                                            @ApiParam(name = "HTTP Servlet Request",
-                                                    value = "Request information for HTTP servlets")
-                                          HttpServletRequest httpServletRequest) {
-        String headerToken = "";
-        User user = new User();
-        String headerAuth = httpServletRequest.getHeader(AUTHORIZATION);
-        if (headerAuth != null && !headerAuth.equals("")) {
-            headerToken = httpServletRequest.getHeader(AUTHORIZATION).substring("Bearer ".length());
-            user = userService.getUserByToken(headerToken);
-            if (!headerToken.isBlank() && !user.getIsAdmin())
-                System.out.println("U can't register new account while u are logged in");
-        }
-
-        if (registerRequest.getIsAdmin() && !headerToken.isBlank() && user.getIsAdmin()) {
-            return ResponseEntity.ok().body(mapper.mapUser(
-                    userService.registerAdmin(registerRequest.getFirstName(),
-                    registerRequest.getLastName(),
-                    registerRequest.getEmail(),
-                    registerRequest.getPassword(),
-                    registerRequest.getPictureUrl())));
-        } else if (Boolean.TRUE.equals(registerRequest.getIsAdmin())) {
-            System.out.println("U are not authorized to register new admin");
-        }
-        return ResponseEntity.ok().body(mapper.mapUser(
-                    userService.register(registerRequest.getFirstName(),
-                    registerRequest.getLastName(),
-                    registerRequest.getEmail(),
-                    registerRequest.getPassword(),
-                    registerRequest.getPictureUrl())));
+                                                @Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok().body(userService.register(request));
     }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<UserDto> registerAdmin(@ApiParam(name = "Admin registration request body",
+                                                            value = "Body of the request")
+                                                 @Valid @RequestBody RegisterRequest request,
+                                                 @ApiParam(name = "HTTP Servlet Request",
+                                                         value = "Request information for HTTP servlets")
+                                                 HttpServletRequest httpServletRequest) {
+        return ResponseEntity.ok().body(userService.registerAdmin(request, httpServletRequest));
+    }
+
 
     /**
      * login to the user
      *
-     * @param loginRequest - {@link LoginRequest}
+     * @param request - {@link LoginRequest}
      * @param httpServletRequest - HTTP Servlet Request
      * @return - {@link AuthorizationResponse}
      */
@@ -95,18 +76,10 @@ public class UserController {
     })
     @PostMapping("/login")
     public ResponseEntity<AuthorizationResponse> login(@ApiParam(name = "Login request", value = "Login request information")
-                                        @Valid @RequestBody LoginRequest loginRequest,
+                                        @Valid @RequestBody LoginRequest request,
                                                        @ApiParam(name = "HTTP Servlet Request",
                                         value = "Request information for HTTP servlets")
                                         HttpServletRequest httpServletRequest) {
-        if (httpServletRequest.getHeader(AUTHORIZATION) != null)
-            System.out.println("U can't log in while u are logged in");
-
-        String token = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        return ResponseEntity.ok().body(new AuthorizationResponse(token, mapper.mapUser(userService.getUserByToken(token))));
+        return ResponseEntity.ok().body(userService.login(request, httpServletRequest));
     }
-
-
-
-
 }
