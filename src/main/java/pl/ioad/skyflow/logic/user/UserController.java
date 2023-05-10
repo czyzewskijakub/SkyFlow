@@ -1,10 +1,10 @@
 package pl.ioad.skyflow.logic.user;
 
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,29 +32,28 @@ public class UserController {
      * @param request - {@link RegisterRequest}
      * @return {@link UserDto}
      */
-    @ApiOperation(value = "Register new user")
+    @Operation(summary = "Register new user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Registration succeed"),
-            @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 401, message = "U are not authorized"),
-            @ApiResponse(code = 400, message = "Bad request"),
-            @ApiResponse(code = 406, message = "Not allowed user registration data")
+            @ApiResponse(responseCode = "200", description = "Registration succeed"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "401", description = "U are not authorized"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not allowed user registration data")
     })
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@ApiParam(name = "Registration request body",
-                                                        value = "Body of the request")
-                                                @Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<UserDto> register(
+            @Parameter(description = "Registration request body", required = true)
+            @Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok().body(userService.register(request));
     }
 
     @PostMapping("/register/admin")
-    public ResponseEntity<UserDto> registerAdmin(@ApiParam(name = "Admin registration request body",
-                                                            value = "Body of the request")
-                                                 @Valid @RequestBody RegisterRequest request,
-                                                 @ApiParam(name = "HTTP Servlet Request",
-                                                         value = "Request information for HTTP servlets")
-                                                 HttpServletRequest httpServletRequest) {
+    public ResponseEntity<UserDto> registerAdmin(
+            @Parameter(description = "Admin registration request body", required = true)
+            @Valid @RequestBody RegisterRequest request,
+            @Parameter(description = "HTTP Servlet Request", required = true)
+            HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(userService.registerAdmin(request, httpServletRequest));
     }
 
@@ -62,24 +61,24 @@ public class UserController {
     /**
      * login to the user
      *
-     * @param request - {@link LoginRequest}
+     * @param request            - {@link LoginRequest}
      * @param httpServletRequest - HTTP Servlet Request
      * @return - {@link AuthorizationResponse}
      */
-    @ApiOperation(value = "Login to the user")
+    @Operation(summary = "Login to the user")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Login succeed"),
-            @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 401, message = "U are not authorized"),
-            @ApiResponse(code = 400, message = "Bad request")
+            @ApiResponse(responseCode = "200", description = "Login succeed"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "401", description = "U are not authorized"),
+            @ApiResponse(responseCode = "400", description = "Bad request")
     })
     @PostMapping("/login")
-    public ResponseEntity<AuthorizationResponse> login(@ApiParam(name = "Login request", value = "Login request information")
-                                        @Valid @RequestBody LoginRequest request,
-                                                       @ApiParam(name = "HTTP Servlet Request",
-                                        value = "Request information for HTTP servlets")
-                                        HttpServletRequest httpServletRequest) {
+    public ResponseEntity<AuthorizationResponse> login(
+            @Parameter(description = "Login request", required = true)
+            @Valid @RequestBody LoginRequest request,
+            @Parameter(description = "HTTP Servlet Request", required = true)
+            HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(userService.login(request, httpServletRequest));
     }
 }

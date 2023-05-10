@@ -1,6 +1,6 @@
 package pl.ioad.skyflow.logic.user.payload.request;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -15,13 +15,13 @@ import org.springframework.lang.NonNull;
 @Getter
 @Setter
 public class LoginRequest {
-    @ApiModelProperty(notes = "User username", example = "example@gmail.com")
+    @Schema(description = "User username", example = "example@gmail.com")
     @NonNull
     @NotBlank
     @Email
     private String email;
 
-    @ApiModelProperty(notes = "User password", example = "123abC#")
+    @Schema(description = "User password", example = "123abC#")
     @NonNull
     @NotBlank
     private String password;
