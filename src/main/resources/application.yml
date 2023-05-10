@@ -23,3 +23,6 @@ jwt:
 opensky:
   username:
   password:
+springdoc:
+  swagger-ui:
+    use-root-path: true

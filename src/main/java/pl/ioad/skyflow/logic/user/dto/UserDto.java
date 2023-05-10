@@ -1,7 +1,11 @@
 package pl.ioad.skyflow.logic.user.dto;
 
-import io.swagger.annotations.ApiModelProperty;
-import lombok.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -9,18 +13,18 @@ import lombok.*;
 @Setter
 @Builder
 public class UserDto {
-    @ApiModelProperty(notes = "User first name", example = "John")
+    @Schema(description = "User first name", example = "John")
     private String firstName;
 
-    @ApiModelProperty(notes = "User last name", example = "Smith")
+    @Schema(description = "User last name", example = "Smith")
     private String lastName;
 
-    @ApiModelProperty(notes = "User email", example = "example@gmail.com")
+    @Schema(description = "User email", example = "example@gmail.com")
     private String email;
 
-    @ApiModelProperty(notes = "Is user admin or standard user", example = "true")
+    @Schema(description = "Is user admin or standard user", example = "true")
     private Boolean isAdmin;
 
-    @ApiModelProperty(notes = "Profile picture url", example = "https://pl.pinterest.com/pin/327848047887112192/")
+    @Schema(description = "Profile picture url", example = "https://pl.pinterest.com/pin/327848047887112192/")
     private String profilePictureUrl;
 }
