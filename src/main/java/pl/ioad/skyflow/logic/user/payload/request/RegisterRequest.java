@@ -29,8 +29,6 @@ public class RegisterRequest {
     @ApiModelProperty(notes = "User email", example = "example@gmail.com")
     private String email;
 
-    @ApiModelProperty(notes = "Is user admin", example = "false")
-    private Boolean isAdmin = false;
 
     @NotBlank
     @NonNull

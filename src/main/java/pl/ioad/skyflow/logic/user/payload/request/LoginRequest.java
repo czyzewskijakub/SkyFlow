@@ -20,6 +20,7 @@ public class LoginRequest {
     @NotBlank
     @Email
     private String email;
+
     @ApiModelProperty(notes = "User password", example = "123abC#")
     @NonNull
     @NotBlank
