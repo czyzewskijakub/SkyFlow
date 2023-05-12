@@ -26,9 +26,15 @@ public class FlightService {
     private final Credentials credentials;
     private final ObjectMapper mapper;
 
-    public List<FlightDTO> findFlight(String airport, Integer begin, Integer end) {
+    /**
+     * @param departureAirport departure departureAirport code
+     * @param begin begin of time range (UNIX time)
+     * @param end end of time range (UNIX time)
+     * @return {@link List}&lt;{@link FlightDTO}&gt;
+     */
+    public List<FlightDTO> findFlight(String departureAirport, Integer begin, Integer end) {
         List<NameValuePair> requestParams = List.of(
-                new BasicNameValuePair(AIRPORT_CODE, airport),
+                new BasicNameValuePair(AIRPORT_CODE, departureAirport),
                 new BasicNameValuePair(BEGIN_TIME, Integer.toString(begin)),
                 new BasicNameValuePair(END_TIME, Integer.toString(end))
         );

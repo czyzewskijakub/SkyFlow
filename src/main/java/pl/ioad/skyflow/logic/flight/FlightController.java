@@ -33,13 +33,13 @@ public class FlightController {
     })
     @GetMapping("/find")
     public ResponseEntity<List<FlightDTO>> findDepartures(@Parameter(description = "ICAO identier for the airport", example = "EDDF", required = true)
-                                                          @RequestParam String airport,
+                                                          @RequestParam String departureAirport,
                                                           @Parameter(description = "Start of time interval to retrieve flights for as Unix time", example = "1517227200", required = true)
                                                           @RequestParam Integer begin,
                                                           @Parameter(description = "End of time interval to retrieve flights for as Unix time", example = "1517230800", required = true)
                                                           @RequestParam Integer end) {
 
-        return ok().body(flightService.findFlight(airport, begin, end));
+        return ok().body(flightService.findFlight(departureAirport, begin, end));
     }
 
 }
