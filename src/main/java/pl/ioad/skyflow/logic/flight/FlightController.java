@@ -14,6 +14,7 @@ import pl.ioad.skyflow.logic.flight.dto.FlightDTO;
 
 import java.util.List;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
@@ -31,7 +32,7 @@ public class FlightController {
             @ApiResponse(responseCode = "401", description = "U are not authorized"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
     })
-    @GetMapping("/find")
+    @GetMapping(value = "/find", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<FlightDTO>> findDepartures(@Parameter(description = "ICAO identier for the airport", example = "EDDF", required = true)
                                                           @RequestParam String departureAirport,
                                                           @Parameter(description = "Start of time interval to retrieve flights for as Unix time", example = "1517227200", required = true)
