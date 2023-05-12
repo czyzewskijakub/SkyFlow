@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pl.ioad.skyflow.logic.flight.dto.FlightDTO;
+
+import java.util.List;
 
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -29,12 +32,12 @@ public class FlightController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
     })
     @GetMapping("/find")
-    public ResponseEntity<String> findDepartures(@Parameter(description = "ICAO identier for the airport", example = "EDDF",required = true)
-                                                 @RequestParam String airport,
-                                                 @Parameter(description = "Start of time interval to retrieve flights for as Unix time", example = "1517227200", required = true)
-                                                 @RequestParam Integer begin,
-                                                 @Parameter(description = "End of time interval to retrieve flights for as Unix time", example = "1517230800", required = true)
-                                                 @RequestParam Integer end) {
+    public ResponseEntity<List<FlightDTO>> findDepartures(@Parameter(description = "ICAO identier for the airport", example = "EDDF", required = true)
+                                                          @RequestParam String airport,
+                                                          @Parameter(description = "Start of time interval to retrieve flights for as Unix time", example = "1517227200", required = true)
+                                                          @RequestParam Integer begin,
+                                                          @Parameter(description = "End of time interval to retrieve flights for as Unix time", example = "1517230800", required = true)
+                                                          @RequestParam Integer end) {
 
         return ok().body(flightService.findFlight(airport, begin, end));
     }

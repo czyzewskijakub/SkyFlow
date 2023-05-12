@@ -1,9 +1,13 @@
 package pl.ioad.skyflow.logic.flight;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.hc.core5.http.NameValuePair;
 import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.springframework.stereotype.Service;
+import pl.ioad.skyflow.logic.flight.dto.FlightDTO;
 import pl.ioad.skyflow.logic.flight.opensky.Credentials;
 
 import java.util.List;
@@ -20,14 +24,21 @@ public class FlightService {
     private static final String END_TIME = "end";
 
     private final Credentials credentials;
+    private final ObjectMapper mapper;
 
-    public String findFlight(String airport, Integer begin, Integer end) {
+    public List<FlightDTO> findFlight(String airport, Integer begin, Integer end) {
         List<NameValuePair> requestParams = List.of(
                 new BasicNameValuePair(AIRPORT_CODE, airport),
                 new BasicNameValuePair(BEGIN_TIME, Integer.toString(begin)),
                 new BasicNameValuePair(END_TIME, Integer.toString(end))
         );
-        return sendGetRequest(DEPARTURE, credentials, requestParams);
+        String response = sendGetRequest(DEPARTURE, credentials, requestParams);
+        try {
+            return mapper.readValue(response, new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
