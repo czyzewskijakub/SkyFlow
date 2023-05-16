@@ -8,12 +8,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.ioad.skyflow.logic.reservation.dto.ReservationDTO;
 import pl.ioad.skyflow.logic.reservation.payload.request.CancelRequest;
 import pl.ioad.skyflow.logic.reservation.payload.request.FlightRequest;
+import pl.ioad.skyflow.logic.reservation.payload.response.ReservationResponse;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/flights")
@@ -31,7 +32,7 @@ public class ReservationController {
             @ApiResponse(responseCode = "400", description = "Not correct request")
     })
     @PostMapping("/book")
-    public ResponseEntity<?> bookFlight(
+    public ResponseEntity<ReservationResponse> bookFlight(
             @Parameter(description = "Flight booking request body", required = true)
             @Valid @RequestBody FlightRequest request,
             @Parameter(description = "HTTP Servlet Request", required = true)
@@ -49,11 +50,27 @@ public class ReservationController {
             @ApiResponse(responseCode = "400", description = "Not correct request")
     })
     @PostMapping("/cancel")
-    public ResponseEntity<?> cancelReservation(
+    public ResponseEntity<ReservationResponse> cancelReservation(
             @Parameter(description = "Flight cancellation request body", required = true)
             @Valid @RequestBody CancelRequest request,
             @Parameter(description = "HTTP Servlet Request", required = true)
             HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(reservationService.cancelFlight(request, httpServletRequest));
     }
+
+    @Operation(summary = "Cancel a flight reservation")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully cancelled flight"),
+            @ApiResponse(responseCode = "404", description = "Flight not found"),
+            @ApiResponse(responseCode = "403", description = "You cannot perform the operation"),
+            @ApiResponse(responseCode = "401", description = "You are not authorized to cancel a flight"),
+            @ApiResponse(responseCode = "400", description = "Not correct request")
+    })
+    @GetMapping("/reservations")
+    public ResponseEntity<List<ReservationDTO>> getUserReservation(@Parameter(description = "HTTP Servlet Request",
+            required = true)
+                                                                   HttpServletRequest httpServletRequest) {
+        return ResponseEntity.ok().body(reservationService.retrieveReservations(httpServletRequest));
+    }
+
 }
