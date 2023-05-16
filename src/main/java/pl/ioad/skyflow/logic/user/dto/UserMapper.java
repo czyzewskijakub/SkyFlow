@@ -3,7 +3,7 @@ package pl.ioad.skyflow.logic.user.dto;
 
 import pl.ioad.skyflow.database.model.User;
 
-public class Mapper {
+public class UserMapper {
     public UserDto mapUser(User user) {
         return new UserDto.UserDtoBuilder()
                 .firstName(user.getFirstName())

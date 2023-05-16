@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.Reservation;
 
 @Service
-public class Mapper {
+public class ReservationMapper {
     public ReservationDTO map(Reservation reservation) {
         return new ReservationDTO
                 .ReservationDTOBuilder()

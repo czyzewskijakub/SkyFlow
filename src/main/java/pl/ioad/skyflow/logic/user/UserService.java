@@ -14,7 +14,7 @@ import pl.ioad.skyflow.logic.exception.type.AuthException;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
 import pl.ioad.skyflow.logic.exception.type.InvalidDataException;
-import pl.ioad.skyflow.logic.user.dto.Mapper;
+import pl.ioad.skyflow.logic.user.dto.UserMapper;
 import pl.ioad.skyflow.logic.user.dto.UserDto;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
 import pl.ioad.skyflow.logic.user.payload.request.RegisterRequest;
@@ -31,7 +31,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder encoder;
-    private final Mapper mapper = new Mapper();
+    private final UserMapper userMapper = new UserMapper();
 
     public UserDto register(RegisterRequest request) {
         if (!request.getEmail().contains("@") && !request.getEmail().contains(".")) {
@@ -48,7 +48,7 @@ public class UserService {
                 .profilePictureUrl(request.getPictureUrl())
                 .isAdmin(false)
                 .build());
-        return mapper.mapUser(user);
+        return userMapper.mapUser(user);
 
     }
 
@@ -73,7 +73,7 @@ public class UserService {
                 .profilePictureUrl(request.getPictureUrl())
                 .isAdmin(true)
                 .build());
-        return mapper.mapUser(newUser);
+        return userMapper.mapUser(newUser);
     }
 
     public AuthorizationResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {

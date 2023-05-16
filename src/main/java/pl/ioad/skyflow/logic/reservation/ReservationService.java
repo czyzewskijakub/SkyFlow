@@ -9,7 +9,7 @@ import pl.ioad.skyflow.database.repository.ReservationRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
-import pl.ioad.skyflow.logic.reservation.dto.Mapper;
+import pl.ioad.skyflow.logic.reservation.dto.ReservationMapper;
 import pl.ioad.skyflow.logic.reservation.dto.ReservationDTO;
 import pl.ioad.skyflow.logic.reservation.payload.request.CancelRequest;
 import pl.ioad.skyflow.logic.reservation.payload.request.FlightRequest;
@@ -25,7 +25,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
-    private final Mapper mapper;
+    private final ReservationMapper reservationMapper;
     public ReservationResponse bookFlight(FlightRequest request, HttpServletRequest http) {
         User user = extractUser(http);
 
@@ -63,7 +63,7 @@ public class ReservationService {
         User user = extractUser(http);
         return reservationRepository.findAll().stream()
                 .filter(e -> e.getUser().getUserId().equals(user.getUserId()))
-                .map(mapper::map)
+                .map(reservationMapper::map)
                 .toList();
     }
 
