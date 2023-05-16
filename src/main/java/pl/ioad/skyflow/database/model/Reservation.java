@@ -1,14 +1,16 @@
 package pl.ioad.skyflow.database.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.sql.Date;
+import java.util.Date;
 
 @Builder
 @Getter
 @Setter
+@JsonFormat(pattern="yyyy-MM-dd")
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Entity
@@ -44,6 +46,4 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
-
 }

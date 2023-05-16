@@ -1,4 +1,4 @@
-package pl.ioad.skyflow.logic.reservation;
+package pl.ioad.skyflow.logic.reservation.payload.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -10,7 +10,6 @@ import lombok.*;
 @Setter
 public class CancelRequest {
 
-    @NotBlank
     @NonNull
     @Schema(description = "reservation id of flight user wants to cancel", example = "1")
     private Long reservationId;
