@@ -6,20 +6,16 @@ import lombok.*;
 
 import java.util.Date;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 @Builder
 @JsonFormat(pattern="yyyy-MM-dd HH:mm")
-public class UpcomingFlightsDTO {
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+public record UpcomingFlightsDTO (
     @Schema(description = "date of the departure", example = "2023-07-12")
-    private Date departureDate;
+    Date departureDate,
     @Schema(description = "departure airport code", example = "BAR")
-    private String departureAirport;
+    String departureAirport,
     @Schema(description = "departure airport code", example = "WAR")
-    private String arrivalAirport;
+    String arrivalAirport,
     @Schema(description = "capacity of the airplane", example = "60")
-    private Integer capacity;
+    Integer capacity
+    ) {
 }

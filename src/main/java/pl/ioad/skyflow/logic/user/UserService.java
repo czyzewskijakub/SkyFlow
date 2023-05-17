@@ -78,9 +78,7 @@ public class UserService {
 
     public AuthorizationResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {
         if (httpServletRequest.getHeader(AUTHORIZATION) != null)
-            throw new AuthException("U cannot log in while u are logged in");
-        else if (userRepository.findByEmail(request.getEmail()).isEmpty())
-            throw new ForbiddenException("Email is taken");
+            throw new AuthException("You cannot log in while you are logged in");
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

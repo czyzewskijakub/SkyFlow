@@ -19,6 +19,10 @@ import pl.ioad.skyflow.logic.user.security.jwt.AuthTokenFilter;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
+    private static final String[][] AUTHORIZED_ONLY = {
+            {"/flights/find"}
+    };
     private static final String[][] SWAGGER_WHITELIST = {
             {"/**/swagger-ui/**", "/**/swagger-resources/**",
                     "/**/swagger-resources/**", "/**/swagger-ui.html/**",
@@ -56,7 +60,8 @@ public class WebSecurityConfig {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-                    .requestMatchers("**").permitAll()
+                    .requestMatchers(AUTHORIZED_ONLY[0][0]).hasRole("USER")
+                    .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();

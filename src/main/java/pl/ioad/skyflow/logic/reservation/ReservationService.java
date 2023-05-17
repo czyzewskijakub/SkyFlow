@@ -30,13 +30,13 @@ public class ReservationService {
         User user = extractUser(http);
 
         Reservation reservation = Reservation.builder()
-                .departureDate(request.getDepartureDate())
-                .arrivalDate(request.getArrivalDate())
-                .departureAirport(request.getDepartureAirport())
-                .arrivalAirport(request.getArrivalAirport())
-                .airline(request.getAirline())
-                .travelClass(request.getTravelClass())
-                .seatNumber(request.getSeatNumber())
+                .departureDate(request.departureDate())
+                .arrivalDate(request.arrivalDate())
+                .departureAirport(request.departureAirport())
+                .arrivalAirport(request.arrivalAirport())
+                .airline(request.airline())
+                .travelClass(request.travelClass())
+                .seatNumber(request.seatNumber())
                 .user(user)
                 .build();
 
@@ -48,7 +48,7 @@ public class ReservationService {
     public ReservationResponse cancelFlight(CancelRequest request, HttpServletRequest http) {
         User user = extractUser(http);
 
-        var reservation = reservationRepository.findById(request.getReservationId());
+        var reservation = reservationRepository.findById(request.reservationId());
         if (reservation.isEmpty())
             throw new InvalidBusinessArgumentException("This reservation does not exist");
         if (!reservation.get().getUser().getUserId().equals(user.getUserId()))

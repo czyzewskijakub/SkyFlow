@@ -3,20 +3,12 @@ package pl.ioad.skyflow.logic.upcomingFlights;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.ioad.skyflow.database.model.Reservation;
 import pl.ioad.skyflow.database.model.UpcomingFlight;
-import pl.ioad.skyflow.database.model.User;
-import pl.ioad.skyflow.database.repository.ReservationRepository;
 import pl.ioad.skyflow.database.repository.UpcomingFlightRepository;
-import pl.ioad.skyflow.database.repository.UserRepository;
-import pl.ioad.skyflow.logic.reservation.dto.Mapper;
-import pl.ioad.skyflow.logic.reservation.payload.request.FlightRequest;
-import pl.ioad.skyflow.logic.reservation.payload.response.ReservationResponse;
 import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsDTO;
 import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsMapper;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.request.UpcomingFlightRequest;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.response.UpcomingFlightsResponse;
-import pl.ioad.skyflow.logic.user.security.jwt.JwtUtils;
 
 import java.util.List;
 
@@ -28,10 +20,10 @@ public class UpcomingFlightsService {
 
     public UpcomingFlightsResponse addFlight(UpcomingFlightRequest request, HttpServletRequest http) {
         UpcomingFlight flight = UpcomingFlight.builder()
-                .departureDate(request.getDepartureDate())
-                .departureAirport(request.getDepartureAirport())
-                .arrivalAirport(request.getArrivalAirport())
-                .capacity(request.getCapacity()).build();
+                .departureDate(request.departureDate())
+                .departureAirport(request.departureAirport())
+                .arrivalAirport(request.arrivalAirport())
+                .capacity(request.capacity()).build();
         upcomingFlightRepository.save(flight);
         return new UpcomingFlightsResponse("Succesfully added flight");
     }
