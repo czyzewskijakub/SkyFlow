@@ -48,7 +48,7 @@ public class ReservationService {
     public ReservationResponse cancelFlight(CancelRequest request, HttpServletRequest http) {
         User user = extractUser(http);
 
-        var reservation = reservationRepository.findById(request.getReservationId());
+        var reservation = reservationRepository.findById(request.reservationId());
         if (reservation.isEmpty())
             throw new InvalidBusinessArgumentException("This reservation does not exist");
         if (!reservation.get().getUser().getUserId().equals(user.getUserId()))

@@ -1,14 +1,12 @@
 package pl.ioad.skyflow.logic.reservation.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.Builder;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+
 @Builder
-public class ReservationDTO {
+public record ReservationDTO (
     @Schema(description = "ID number of flight reservation", example = "1")
-    private Long reservationId;
+    Long reservationId
+) {
 }

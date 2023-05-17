@@ -12,17 +12,16 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-@JsonFormat(pattern="yyyy-MM-dd")
 public class FlightRequest {
 
     @NonNull
     @Schema(description = "Date of departure", example = "1980-04-09")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
     private Date departureDate;
 
     @NonNull
     @Schema(description = "Date of arrival", example = "1980-04-10")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
     private Date arrivalDate;
 
     @NotBlank
