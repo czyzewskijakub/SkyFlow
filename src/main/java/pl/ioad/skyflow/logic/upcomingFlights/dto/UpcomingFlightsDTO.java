@@ -7,8 +7,8 @@ import lombok.*;
 import java.util.Date;
 
 @Builder
+@JsonFormat(pattern="yyyy-MM-dd HH:mm")
 public record UpcomingFlightsDTO (
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
     @Schema(description = "date of the departure", example = "2023-07-12")
     Date departureDate,
     @Schema(description = "departure airport code", example = "BAR")

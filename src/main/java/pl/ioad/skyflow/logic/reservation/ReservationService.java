@@ -30,13 +30,13 @@ public class ReservationService {
         User user = extractUser(http);
 
         Reservation reservation = Reservation.builder()
-                .departureDate(request.getDepartureDate())
-                .arrivalDate(request.getArrivalDate())
-                .departureAirport(request.getDepartureAirport())
-                .arrivalAirport(request.getArrivalAirport())
-                .airline(request.getAirline())
-                .travelClass(request.getTravelClass())
-                .seatNumber(request.getSeatNumber())
+                .departureDate(request.departureDate())
+                .arrivalDate(request.arrivalDate())
+                .departureAirport(request.departureAirport())
+                .arrivalAirport(request.arrivalAirport())
+                .airline(request.airline())
+                .travelClass(request.travelClass())
+                .seatNumber(request.seatNumber())
                 .user(user)
                 .build();
 
