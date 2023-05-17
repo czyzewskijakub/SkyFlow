@@ -16,6 +16,11 @@ spring:
           format_sql: true
       database: postgresql
       database-platform: org.hibernate.dialect.PostgreSQLDialect
+    sql:
+      init:
+        platform: postgresql
+        mode: always  # Change it to 'always' if you want to initialize data on app start.
+        continue-on-error: true
 jwt:
   variables:
     jwtSecret:

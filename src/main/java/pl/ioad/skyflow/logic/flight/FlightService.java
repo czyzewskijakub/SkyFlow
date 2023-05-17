@@ -9,6 +9,7 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.logic.flight.dto.FlightDTO;
 import pl.ioad.skyflow.logic.flight.opensky.Credentials;
+import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
 
 import java.util.List;
 
@@ -27,16 +28,14 @@ public class FlightService {
     private final ObjectMapper mapper;
 
     /**
-     * @param departureAirport departure departureAirport code
-     * @param begin begin of time range (UNIX time)
-     * @param end end of time range (UNIX time)
+     * @param request Flight search request
      * @return {@link List}&lt;{@link FlightDTO}&gt;
      */
-    public List<FlightDTO> findFlight(String departureAirport, Integer begin, Integer end) {
+    public List<FlightDTO> findFlight(FlightSearchRequest request) {
         List<NameValuePair> requestParams = List.of(
-                new BasicNameValuePair(AIRPORT_CODE, departureAirport),
-                new BasicNameValuePair(BEGIN_TIME, Integer.toString(begin)),
-                new BasicNameValuePair(END_TIME, Integer.toString(end))
+                new BasicNameValuePair(AIRPORT_CODE, request.departureAirport()),
+                new BasicNameValuePair(BEGIN_TIME, Integer.toString(request.begin())),
+                new BasicNameValuePair(END_TIME, Integer.toString(request.end()))
         );
         String response = sendGetRequest(DEPARTURE, credentials, requestParams);
         try {
