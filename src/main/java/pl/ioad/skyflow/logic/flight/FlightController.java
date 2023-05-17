@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ioad.skyflow.logic.flight.dto.FlightDTO;
+import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
 
 import java.util.List;
 
@@ -32,15 +33,11 @@ public class FlightController {
             @ApiResponse(responseCode = "401", description = "U are not authorized"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
     })
-    @GetMapping(value = "/find", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<FlightDTO>> findDepartures(@Parameter(description = "ICAO identier for the airport", example = "EDDF", required = true)
-                                                          @RequestParam String departureAirport,
-                                                          @Parameter(description = "Start of time interval to retrieve flights for as Unix time", example = "1517227200", required = true)
-                                                          @RequestParam Integer begin,
-                                                          @Parameter(description = "End of time interval to retrieve flights for as Unix time", example = "1517230800", required = true)
-                                                          @RequestParam Integer end) {
+    @PostMapping(value = "/find", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<FlightDTO>> findDepartures(@Parameter(description = "Flight search request", required = true)
+                                                          @RequestBody FlightSearchRequest request) {
 
-        return ok().body(flightService.findFlight(departureAirport, begin, end));
+        return ok().body(flightService.findFlight(request));
     }
 
 }

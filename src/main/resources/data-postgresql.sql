@@ -1,0 +1,1 @@
+insert into users values (1, 'example@gmail.com', 'John', false,'Smith', '$2a$10$NB5uxsLNyzzoqJCU1Cn47OnJWfTOYjnqnD540Ri8JtJLuzEGSaEy2', 'https://pl.pinterest.com/pin/327848047887112192/');

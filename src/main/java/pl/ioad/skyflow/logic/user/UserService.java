@@ -82,7 +82,7 @@ public class UserService {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(), request.getPassword()
+                        request.email(), request.password()
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
