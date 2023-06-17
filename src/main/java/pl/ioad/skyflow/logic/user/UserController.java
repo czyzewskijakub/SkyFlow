@@ -14,11 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.ioad.skyflow.logic.user.dto.UserDto;
+import pl.ioad.skyflow.logic.user.dto.UserWithIdDto;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UpdateDataRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UserDataRequest;
 import pl.ioad.skyflow.logic.user.payload.response.AuthorizationResponse;
+import pl.ioad.skyflow.logic.user.payload.response.SimpleResponse;
 import pl.ioad.skyflow.logic.user.payload.response.UserResponse;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -35,20 +39,20 @@ public class UserController {
      */
     @Operation(summary = "Register new user account")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Registration succeed", content = {
-                    @Content(schema = @Schema(example = """
-                                                        {
-                                                          "status": 201,
-                                                          "message": "Successfully registered user account",
-                                                          "user": {
-                                                            "firstName": "John",
-                                                            "lastName": "Smith",
-                                                            "email": "example@gmail.com",
-                                                            "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
-                                                          }
-                                                        """)
-                    )
-            }),
+            @ApiResponse(responseCode = "201", description = "Registration succeed", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "status": 201,
+                                                  "message": "Successfully registered user account",
+                                                  "user": {
+                                                    "firstName": "John",
+                                                    "lastName": "Smith",
+                                                    "email": "example@gmail.com",
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                  }
+                                                """
+                    ))
+            ),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
                     schema = @Schema(example = """
                                                 {
@@ -103,20 +107,20 @@ public class UserController {
 
     @Operation(summary = "Register new administrator account")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Registration succeed", content = {
-                    @Content(schema = @Schema(example = """
-                                                        {
-                                                          "status": 201,
-                                                          "message": "Successfully registered admin account",
-                                                          "user": {
-                                                            "firstName": "John",
-                                                            "lastName": "Smith",
-                                                            "email": "example@gmail.com",
-                                                            "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
-                                                          }
-                                                        """)
-                    )
-            }),
+            @ApiResponse(responseCode = "201", description = "Registration succeed", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "status": 201,
+                                                  "message": "Successfully registered admin account",
+                                                  "user": {
+                                                    "firstName": "John",
+                                                    "lastName": "Smith",
+                                                    "email": "example@gmail.com",
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                  }
+                                                """
+                    ))
+            ),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
                     schema = @Schema(example = """
                                                 {
@@ -180,15 +184,15 @@ public class UserController {
      */
     @Operation(summary = "Login to the user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login succeed", content = {
-                    @Content(schema = @Schema(example = """
+            @ApiResponse(responseCode = "200", description = "Login succeed", content = @Content(
+                    schema = @Schema(example = """
                             {
                               "status": 200,
                               "message": "Successfully logged in",
                               "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleGFtcGxlQGdtYWlsLmNvbSIsImlhdCI6MTY4NzAwNDAzNywiZXhwIjoxNjg3MDkwNDM3fQ.yFRMblX-se_dMIWICnSPVaoKviH97aCcnjQw7ISb_hA"
-                            }""")
-                    )
-            }),
+                            }"""
+                    ))
+            ),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
                     schema = @Schema(example = """
                                                 {
@@ -227,7 +231,8 @@ public class UserController {
                                                   "message": "Not found"
                                                 }
                                                 """
-                    )))
+                    ))
+            )
     })
     @PostMapping("/login")
     public ResponseEntity<AuthorizationResponse> login(
@@ -241,20 +246,20 @@ public class UserController {
     @Operation(summary = "Update user data")
     @PutMapping("/update")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User updated", content = {
-                    @Content(schema = @Schema(example = """
-                                                        {
-                                                          "status": 200,
-                                                          "message": "User updated",
-                                                          "user": {
-                                                            "firstName": "John",
-                                                            "lastName": "Smith",
-                                                            "email": "example@gmail.com",
-                                                            "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
-                                                          }
-                                                        """)
-                    )
-            }),
+            @ApiResponse(responseCode = "202", description = "User updated", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "status": 202,
+                                                  "message": "User updated",
+                                                  "user": {
+                                                    "firstName": "John",
+                                                    "lastName": "Smith",
+                                                    "email": "example@gmail.com",
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                  }
+                                                """
+                    ))
+            ),
             @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
                     schema = @Schema(example = """
                                                 {
@@ -307,10 +312,94 @@ public class UserController {
             )
     })
     public ResponseEntity<UserResponse> updateUserData(
-            @RequestParam(name = "userId") Long userId,
             @RequestBody @Valid UpdateDataRequest userData,
             HttpServletRequest httpServletRequest) {
-        return ResponseEntity.accepted().body(userService.update(userId, userData, httpServletRequest));
+        return ResponseEntity.accepted().body(userService.update(userData, httpServletRequest));
     }
+
+    @Operation(summary = "Change user account type")
+    @PutMapping("/type")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "202", description = "Account type updated", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "status": 202,
+                                                  "message": "Account type updated",
+                                                  "user": {
+                                                    "firstName": "John",
+                                                    "lastName": "Smith",
+                                                    "email": "example@gmail.com",
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                  }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "401", description = "U are not authorized", content = @Content(
+            schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 401,
+                                                  "exception": "Exception",
+                                                  "message": "Unauthorized"
+                                                }
+                                                """)
+                    )
+            ),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 404,
+                                                  "exception": "Exception",
+                                                  "message": "Not found"
+                                                }
+                                                """
+                    ))
+            ),
+    })
+    public ResponseEntity<SimpleResponse> changeUserAccountType(@RequestParam Long userId,
+                                                                @RequestParam boolean isAdmin,
+                                                                HttpServletRequest http) {
+        return ResponseEntity.accepted().body(userService.changeUserAccountType(userId, isAdmin, http));
+    }
+
+    @Operation(summary = "Retrieve all existing users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All users retrieved", content = @Content(
+                    schema = @Schema(example = """
+                                                [
+                                                  "user": {
+                                                    "firstName": "John",
+                                                    "lastName": "Smith",
+                                                    "email": "example@gmail.com",
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                ]
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            ),
+    })
+    @GetMapping("/all")
+    public ResponseEntity<List<UserWithIdDto>> getAllUsers(HttpServletRequest http) {
+        return ResponseEntity.ok(userService.getAllUsers(http));
+    }
+
 
 }

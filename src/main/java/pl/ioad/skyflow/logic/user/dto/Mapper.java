@@ -14,4 +14,15 @@ public class Mapper {
                 .build();
     }
 
+    public UserWithIdDto mapUserWithId(User user) {
+        return new UserWithIdDto.UserWithIdDtoBuilder()
+                .userId(user.getUserId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .isAdmin(user.getIsAdmin())
+                .profilePictureUrl(user.getProfilePictureUrl())
+                .build();
+    }
+
 }
