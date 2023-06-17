@@ -3,11 +3,14 @@ package pl.ioad.skyflow.logic.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.ioad.skyflow.logic.user.dto.UserDto;
@@ -24,7 +27,6 @@ public class UserController {
 
     private final UserService userService;
 
-
     /**
      * register new User
      *
@@ -33,28 +35,128 @@ public class UserController {
      */
     @Operation(summary = "Register new user account")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Registration succeed"),
-            @ApiResponse(responseCode = "404", description = "Not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "401", description = "U are not authorized"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "406", description = "Not allowed user registration data")
+            @ApiResponse(responseCode = "201", description = "Registration succeed", content = {
+                    @Content(schema = @Schema(example = """
+                                                        {
+                                                          "status": 201,
+                                                          "message": "Successfully registered user account",
+                                                          "user": {
+                                                            "firstName": "John",
+                                                            "lastName": "Smith",
+                                                            "email": "example@gmail.com",
+                                                            "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                          }
+                                                        """)
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "401", description = "U are not authorized", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 401,
+                                                  "exception": "Exception",
+                                                  "message": "Unauthorized"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "406", description = "Not allowed user registration data",  content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 406,
+                                                  "exception": "Exception",
+                                                  "message": "Unaccepted"
+                                                }
+                                                """
+                    ))
+            )
     })
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(
             @Parameter(description = "Registration request body", required = true)
             @Valid @RequestBody UserDataRequest request) {
-        return ResponseEntity.ok().body(userService.register(request));
+        return new ResponseEntity<>(
+                userService.register(request),
+                HttpStatus.CREATED
+        );
     }
+
 
     @Operation(summary = "Register new administrator account")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Registration succeed"),
-            @ApiResponse(responseCode = "404", description = "Not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "401", description = "U are not authorized"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "406", description = "Not allowed user registration data")
+            @ApiResponse(responseCode = "201", description = "Registration succeed", content = {
+                    @Content(schema = @Schema(example = """
+                                                        {
+                                                          "status": 201,
+                                                          "message": "Successfully registered admin account",
+                                                          "user": {
+                                                            "firstName": "John",
+                                                            "lastName": "Smith",
+                                                            "email": "example@gmail.com",
+                                                            "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                          }
+                                                        """)
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "401", description = "U are not authorized", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 401,
+                                                  "exception": "Exception",
+                                                  "message": "Unauthorized"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "406", description = "Not allowed user registration data",  content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 406,
+                                                  "exception": "Exception",
+                                                  "message": "Unaccepted"
+                                                }
+                                                """
+                    ))
+            )
     })
     @PostMapping("/register/admin")
     public ResponseEntity<UserResponse> registerAdmin(
@@ -62,7 +164,10 @@ public class UserController {
             @Valid @RequestBody UserDataRequest request,
             @Parameter(description = "HTTP Servlet Request", required = true)
             HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(userService.registerAdmin(request, httpServletRequest));
+        return new ResponseEntity<>(
+                userService.registerAdmin(request, httpServletRequest),
+                HttpStatus.CREATED
+        );
     }
 
 
@@ -75,11 +180,54 @@ public class UserController {
      */
     @Operation(summary = "Login to the user")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login succeed"),
-            @ApiResponse(responseCode = "404", description = "Not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "401", description = "U are not authorized"),
-            @ApiResponse(responseCode = "400", description = "Bad request")
+            @ApiResponse(responseCode = "200", description = "Login succeed", content = {
+                    @Content(schema = @Schema(example = """
+                            {
+                              "status": 200,
+                              "message": "Successfully logged in",
+                              "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleGFtcGxlQGdtYWlsLmNvbSIsImlhdCI6MTY4NzAwNDAzNywiZXhwIjoxNjg3MDkwNDM3fQ.yFRMblX-se_dMIWICnSPVaoKviH97aCcnjQw7ISb_hA"
+                            }""")
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "401", description = "U are not authorized", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 401,
+                                                  "exception": "Exception",
+                                                  "message": "Unauthorized"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 404,
+                                                  "exception": "Exception",
+                                                  "message": "Not found"
+                                                }
+                                                """
+                    )))
     })
     @PostMapping("/login")
     public ResponseEntity<AuthorizationResponse> login(
@@ -93,12 +241,70 @@ public class UserController {
     @Operation(summary = "Update user data")
     @PutMapping("/update")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User updated"),
-            @ApiResponse(responseCode = "404", description = "Not found"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "401", description = "U are not authorized"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "406", description = "Not allowed user update data")
+            @ApiResponse(responseCode = "200", description = "User updated", content = {
+                    @Content(schema = @Schema(example = """
+                                                        {
+                                                          "status": 200,
+                                                          "message": "User updated",
+                                                          "user": {
+                                                            "firstName": "John",
+                                                            "lastName": "Smith",
+                                                            "email": "example@gmail.com",
+                                                            "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                          }
+                                                        """)
+                    )
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "401", description = "U are not authorized", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 401,
+                                                  "exception": "Exception",
+                                                  "message": "Unauthorized"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "404", description = "Not found", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 404,
+                                                  "exception": "Exception",
+                                                  "message": "Not found"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "406", description = "Data not allowed",  content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 406,
+                                                  "exception": "Exception",
+                                                  "message": "Unaccepted"
+                                                }
+                                                """
+                    ))
+            )
     })
     public ResponseEntity<UserResponse> updateUserData(
             @RequestParam(name = "userId") Long userId,

@@ -86,6 +86,9 @@ public class UserService {
     }
 
     public AuthorizationResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {
+        if (!userRepository.existsByEmail(request.email())) {
+            throw new EntityNotFoundException("User with given data does not exist");
+        }
         if (httpServletRequest.getHeader(AUTHORIZATION) != null) {
             throw new AuthException("You cannot log in while you are logged in");
         }
