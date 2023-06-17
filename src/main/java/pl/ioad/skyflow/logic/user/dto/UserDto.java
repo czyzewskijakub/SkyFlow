@@ -1,5 +1,6 @@
 package pl.ioad.skyflow.logic.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -15,6 +16,7 @@ public record UserDto (
     String email,
 
     @Schema(description = "Is user admin or standard user", example = "true")
+    @JsonIgnore
     Boolean isAdmin,
 
     @Schema(description = "Profile picture url", example = "https://pl.pinterest.com/pin/327848047887112192/")

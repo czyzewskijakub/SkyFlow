@@ -43,7 +43,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     public final ResponseEntity<Object> handleResponse(HttpStatus httpStatus, RuntimeException exception) {
-        return ResponseEntity.status(httpStatus).body(new ApiError(httpStatus,
+        return ResponseEntity.status(httpStatus).body(new ErrorResponse(httpStatus,
                                                                     exception.getClass().getSimpleName(),
                                                                     exception.getMessage()));
     }

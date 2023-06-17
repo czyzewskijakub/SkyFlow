@@ -9,14 +9,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.ioad.skyflow.logic.user.dto.UserDto;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
-import pl.ioad.skyflow.logic.user.payload.request.RegisterRequest;
+import pl.ioad.skyflow.logic.user.payload.request.UpdateDataRequest;
+import pl.ioad.skyflow.logic.user.payload.request.UserDataRequest;
 import pl.ioad.skyflow.logic.user.payload.response.AuthorizationResponse;
+import pl.ioad.skyflow.logic.user.payload.response.UserResponse;
 
 @RestController
 @RequestMapping("/users")
@@ -29,7 +28,7 @@ public class UserController {
     /**
      * register new User
      *
-     * @param request - {@link RegisterRequest}
+     * @param request - {@link UserDataRequest}
      * @return {@link UserDto}
      */
     @Operation(summary = "Register new user account")
@@ -42,9 +41,9 @@ public class UserController {
             @ApiResponse(responseCode = "406", description = "Not allowed user registration data")
     })
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(
+    public ResponseEntity<UserResponse> register(
             @Parameter(description = "Registration request body", required = true)
-            @Valid @RequestBody RegisterRequest request) {
+            @Valid @RequestBody UserDataRequest request) {
         return ResponseEntity.ok().body(userService.register(request));
     }
 
@@ -58,9 +57,9 @@ public class UserController {
             @ApiResponse(responseCode = "406", description = "Not allowed user registration data")
     })
     @PostMapping("/register/admin")
-    public ResponseEntity<UserDto> registerAdmin(
+    public ResponseEntity<UserResponse> registerAdmin(
             @Parameter(description = "Admin registration request body", required = true)
-            @Valid @RequestBody RegisterRequest request,
+            @Valid @RequestBody UserDataRequest request,
             @Parameter(description = "HTTP Servlet Request", required = true)
             HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(userService.registerAdmin(request, httpServletRequest));
@@ -90,4 +89,21 @@ public class UserController {
             HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(userService.login(request, httpServletRequest));
     }
+
+    @Operation(summary = "Update user data")
+    @PutMapping("/update")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "401", description = "U are not authorized"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not allowed user update data")
+    })
+    public ResponseEntity<UserResponse> updateUserData(
+            @RequestParam(name = "userId") Long userId,
+            @RequestBody @Valid UpdateDataRequest userData) {
+        return ResponseEntity.accepted().body(userService.update(userId, userData));
+    }
+
 }

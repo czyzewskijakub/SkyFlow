@@ -29,7 +29,6 @@ public class User {
     @NonNull
     private String passwordHash;
 
-    @NonNull
     private String profilePictureUrl;
 
     @NonNull
