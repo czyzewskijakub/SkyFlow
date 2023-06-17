@@ -308,8 +308,9 @@ public class UserController {
     })
     public ResponseEntity<UserResponse> updateUserData(
             @RequestParam(name = "userId") Long userId,
-            @RequestBody @Valid UpdateDataRequest userData) {
-        return ResponseEntity.accepted().body(userService.update(userId, userData));
+            @RequestBody @Valid UpdateDataRequest userData,
+            HttpServletRequest httpServletRequest) {
+        return ResponseEntity.accepted().body(userService.update(userId, userData, httpServletRequest));
     }
 
 }

@@ -104,10 +104,13 @@ public class UserService {
         return new AuthorizationResponse(HttpStatus.OK.value(), "Successfully logged in", token);
     }
 
-    public UserResponse update(Long userId, UpdateDataRequest userData) {
+    public UserResponse update(Long userId, UpdateDataRequest userData, HttpServletRequest http) {
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isEmpty()) {
             throw new EntityNotFoundException("User not found");
+        }
+        if (!existingUser.get().equals(validateToken(http))) {
+            throw new ForbiddenException("You cannot change other user's data");
         }
         if (userRepository.existsByEmail(userData.getEmail())) {
             throw new DuplicatedDataException("User with given email already exists");
@@ -137,5 +140,18 @@ public class UserService {
                 );
     }
 
+    private User validateToken(HttpServletRequest http) {
+        String token = http.getHeader("Authorization");
+        if (token == null) {
+            throw new ForbiddenException("You are not authorized");
+        }
+        System.out.println("BEFORE : " + token);
+        token = token.substring("Bearer ".length());
+        System.out.println("AFTER : " + token);
+        var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
+        if (user.isPresent())
+            return user.get();
+        throw new ForbiddenException("You have to be logged in to your account to change data");
+    }
 
 }
