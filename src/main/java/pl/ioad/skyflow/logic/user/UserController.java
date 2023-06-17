@@ -32,7 +32,7 @@ public class UserController {
      * @param request - {@link RegisterRequest}
      * @return {@link UserDto}
      */
-    @Operation(summary = "Register new user")
+    @Operation(summary = "Register new user account")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Registration succeed"),
             @ApiResponse(responseCode = "404", description = "Not found"),
@@ -48,6 +48,15 @@ public class UserController {
         return ResponseEntity.ok().body(userService.register(request));
     }
 
+    @Operation(summary = "Register new administrator account")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Registration succeed"),
+            @ApiResponse(responseCode = "404", description = "Not found"),
+            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "401", description = "U are not authorized"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not allowed user registration data")
+    })
     @PostMapping("/register/admin")
     public ResponseEntity<UserDto> registerAdmin(
             @Parameter(description = "Admin registration request body", required = true)
