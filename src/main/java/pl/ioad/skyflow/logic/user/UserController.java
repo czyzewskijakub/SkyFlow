@@ -48,7 +48,8 @@ public class UserController {
                                                     "firstName": "John",
                                                     "lastName": "Smith",
                                                     "email": "example@gmail.com",
-                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/",
+                                                    "admin": false
                                                   }
                                                 """
                     ))
@@ -116,7 +117,8 @@ public class UserController {
                                                     "firstName": "John",
                                                     "lastName": "Smith",
                                                     "email": "example@gmail.com",
-                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/",
+                                                    "admin": true
                                                   }
                                                 """
                     ))
@@ -255,7 +257,8 @@ public class UserController {
                                                     "firstName": "John",
                                                     "lastName": "Smith",
                                                     "email": "example@gmail.com",
-                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
+                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/",
+                                                    "admin": false
                                                   }
                                                 """
                     ))
@@ -324,14 +327,9 @@ public class UserController {
                     schema = @Schema(example = """
                                                 {
                                                   "status": 202,
-                                                  "message": "Account type updated",
-                                                  "user": {
-                                                    "firstName": "John",
-                                                    "lastName": "Smith",
-                                                    "email": "example@gmail.com",
-                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
-                                                  }
-                                                """
+                                                  "message": "User account type changed from admin to standard user"
+                                                }
+                                               """
                     ))
             ),
             @ApiResponse(responseCode = "401", description = "U are not authorized", content = @Content(
@@ -375,14 +373,17 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All users retrieved", content = @Content(
                     schema = @Schema(example = """
-                                                [
-                                                  "user": {
-                                                    "firstName": "John",
-                                                    "lastName": "Smith",
-                                                    "email": "example@gmail.com",
-                                                    "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/"
-                                                ]
-                                                """
+                                            [
+                                                {
+                                                  "userId": 1,
+                                                  "firstName": "John",
+                                                  "lastName": "Smith",
+                                                  "email": "example@gmail.com",
+                                                  "profilePictureUrl": "https://pl.pinterest.com/pin/327848047887112192/",
+                                                  "admin": false
+                                                }
+                                            ]
+                                               """
                     ))
             ),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(
