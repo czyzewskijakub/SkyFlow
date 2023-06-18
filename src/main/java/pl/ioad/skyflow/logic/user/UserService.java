@@ -1,9 +1,9 @@
 package pl.ioad.skyflow.logic.user;
 
+import com.google.common.base.Strings;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class UserService {
                 .isAdmin(false)
                 .build());
         return new UserResponse(
-                HttpStatus.CREATED.value(),
+                CREATED.value(),
                 "Successfully registered user account",
                 mapper.mapUser(user));
 
@@ -82,7 +83,7 @@ public class UserService {
                 .isAdmin(true)
                 .build());
         return new UserResponse(
-                HttpStatus.CREATED.value(),
+                CREATED.value(),
                 "Successfully registered admin user account",
                 mapper.mapUser(newUser));
     }
@@ -103,7 +104,7 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = jwtUtils.generateJwtToken(authentication);
-        return new AuthorizationResponse(HttpStatus.OK.value(), "Successfully logged in", token);
+        return new AuthorizationResponse(OK.value(), "Successfully logged in", token);
     }
 
     public UserResponse update(UpdateDataRequest userData, HttpServletRequest http) {
@@ -113,26 +114,26 @@ public class UserService {
             throw new DuplicatedDataException("User with given email already exists");
         }
 
-        if (userData.getFirstName() != null && !userData.getFirstName().isEmpty()) {
+        if (!Strings.isNullOrEmpty(userData.getFirstName())) {
             currentUser.setFirstName(userData.getFirstName());
         }
-        if (userData.getLastName() != null && !userData.getLastName().isEmpty()) {
+        if (!Strings.isNullOrEmpty(userData.getLastName())) {
             currentUser.setLastName(userData.getLastName());
         }
-        if (userData.getEmail() != null && !userData.getEmail().isEmpty()) {
+        if (!Strings.isNullOrEmpty(userData.getEmail())) {
             currentUser.setEmail(userData.getEmail());
         }
-        if (userData.getPassword() != null && !userData.getPassword().isEmpty()) {
+        if (!Strings.isNullOrEmpty(userData.getPassword())) {
             currentUser.setPasswordHash(encoder.encode(userData.getPassword()));
         }
-        if (userData.getPictureUrl() != null && !userData.getPictureUrl().isEmpty()) {
+        if (!Strings.isNullOrEmpty(userData.getPictureUrl())) {
             currentUser.setProfilePictureUrl(userData.getPictureUrl());
         }
 
         userRepository.save(currentUser);
 
         return new UserResponse(
-                HttpStatus.ACCEPTED.value(),
+                ACCEPTED.value(),
                 "User data updated",
                 mapper.mapUser(currentUser)
                 );
@@ -151,15 +152,11 @@ public class UserService {
 
         existingUser.get().setAdmin(isAdmin);
         userRepository.save(existingUser.get());
-        String message;
-        if (isAdmin) {
-            message = "User account type changed from standard user to admin";
-        } else {
-            message = "User account type changed from admin to standard user";
-        }
+        String message = isAdmin ? "User account type changed from standard user to admin"
+                : "User account type changed from admin to standard user";
 
         return new SimpleResponse(
-                HttpStatus.ACCEPTED.value(),
+                ACCEPTED.value(),
                 message
                 );
     }
@@ -168,7 +165,7 @@ public class UserService {
         if (!validateToken(http).isAdmin()) {
             throw new ForbiddenException("You cannot display all users");
         }
-        return userRepository.findAll().stream().toList();
+        return userRepository.findAll();
     }
 
     protected User validateToken(HttpServletRequest http) {

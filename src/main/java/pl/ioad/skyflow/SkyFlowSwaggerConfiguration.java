@@ -11,20 +11,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.ioad.skyflow.logic.flight.opensky.Credentials;
 
+import static io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP;
+
 @OpenAPIDefinition
 @Configuration
 @EnableConfigurationProperties(Credentials.class)
 public class SkyFlowSwaggerConfiguration {
     @Bean
     public OpenAPI baseOpenApi() {
+        String authName = "bearerAuth";
         return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
+                .addSecurityItem(new SecurityRequirement().addList(authName))
                 .components(
                         new Components()
-                                .addSecuritySchemes("bearerAuth",
+                                .addSecuritySchemes(authName,
                                         new SecurityScheme()
-                                                .name("bearerAuth")
-                                                .type(SecurityScheme.Type.HTTP)
+                                                .name(authName)
+                                                .type(HTTP)
                                                 .scheme("bearer")
                                                 .bearerFormat("JWT"))
                 )
