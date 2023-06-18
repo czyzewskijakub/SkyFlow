@@ -17,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
 
 
     public static UserDetailsImpl build(User user) {
-        List<String> roles = List.of(user.getIsAdmin() ?
+        List<String> roles = List.of(user.isAdmin() ?
                 new String[] {"ROLE_ADMIN", "ROLE_USER"} : new String[] {"ROLE_USER"});
 
         List<SimpleGrantedAuthority> authorities = roles.stream().map(SimpleGrantedAuthority::new).toList();

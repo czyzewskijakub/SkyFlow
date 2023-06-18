@@ -1,9 +1,15 @@
 package pl.ioad.skyflow.logic.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
+@Getter
+@Setter
+@AllArgsConstructor
 public class UserDto {
     @Schema(description = "User first name", example = "John")
     private String firstName;

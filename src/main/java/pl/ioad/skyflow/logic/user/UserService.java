@@ -17,7 +17,6 @@ import pl.ioad.skyflow.logic.exception.type.DuplicatedDataException;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
 import pl.ioad.skyflow.logic.user.dto.Mapper;
-import pl.ioad.skyflow.logic.user.dto.UserWithIdDto;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UpdateDataRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UserDataRequest;
@@ -68,7 +67,7 @@ public class UserService {
         }
         token = token.substring("Bearer ".length());
         var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
-        if (user.isPresent() && !user.get().getIsAdmin()) {
+        if (user.isPresent() && !user.get().isAdmin()) {
             throw new InvalidBusinessArgumentException("You cannot register new admin as standard user");
         }   else if (userRepository.existsByEmail(request.getEmail())) {
             throw new ForbiddenException("Email is taken");
@@ -141,7 +140,7 @@ public class UserService {
 
     public SimpleResponse changeUserAccountType(Long userId, boolean isAdmin, HttpServletRequest http) {
         User user = validateToken(http);
-        if (!user.getIsAdmin()) {
+        if (!user.isAdmin()) {
             throw new ForbiddenException("As a standard user you cannot change account types");
         }
         Optional<User> existingUser = userRepository.findById(userId);
@@ -150,7 +149,7 @@ public class UserService {
             throw new EntityNotFoundException("User with given ID does not exist");
         }
 
-        existingUser.get().setIsAdmin(isAdmin);
+        existingUser.get().setAdmin(isAdmin);
         userRepository.save(existingUser.get());
         String message;
         if (isAdmin) {
@@ -165,14 +164,16 @@ public class UserService {
                 );
     }
 
-    public List<UserWithIdDto> getAllUsers(HttpServletRequest http) {
-        if (!validateToken(http).getIsAdmin()) {
+    public List<User> getAllUsers(HttpServletRequest http) {
+        if (!validateToken(http).isAdmin()) {
             throw new ForbiddenException("You cannot display all users");
         }
-        return userRepository.findAll().stream().map(mapper::mapUserWithId).toList();
+        return userRepository.findAll().stream().toList();
     }
 
     protected User validateToken(HttpServletRequest http) {
+        if (http == null)
+            throw new ForbiddenException("Authorization header is null");
         String token = http.getHeader("Authorization");
         if (token == null) {
             throw new ForbiddenException("You have to be logged-in to your account to change data");

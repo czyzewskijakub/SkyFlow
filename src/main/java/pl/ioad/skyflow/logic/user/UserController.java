@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.logic.user.dto.UserDto;
-import pl.ioad.skyflow.logic.user.dto.UserWithIdDto;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UpdateDataRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UserDataRequest;
@@ -397,7 +397,7 @@ public class UserController {
             ),
     })
     @GetMapping("/all")
-    public ResponseEntity<List<UserWithIdDto>> getAllUsers(HttpServletRequest http) {
+    public ResponseEntity<List<User>> getAllUsers(HttpServletRequest http) {
         return ResponseEntity.ok(userService.getAllUsers(http));
     }
 
