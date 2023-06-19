@@ -1,5 +1,7 @@
 package pl.ioad.skyflow.logic.user;
 
+import com.google.common.base.Strings;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,17 +13,23 @@ import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.database.repository.UserRepository;
 import pl.ioad.skyflow.logic.exception.type.AuthException;
+import pl.ioad.skyflow.logic.exception.type.DuplicatedDataException;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
-import pl.ioad.skyflow.logic.exception.type.InvalidDataException;
 import pl.ioad.skyflow.logic.user.dto.Mapper;
-import pl.ioad.skyflow.logic.user.dto.UserDto;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
-import pl.ioad.skyflow.logic.user.payload.request.RegisterRequest;
+import pl.ioad.skyflow.logic.user.payload.request.UpdateDataRequest;
+import pl.ioad.skyflow.logic.user.payload.request.UserDataRequest;
 import pl.ioad.skyflow.logic.user.payload.response.AuthorizationResponse;
+import pl.ioad.skyflow.logic.user.payload.response.SimpleResponse;
+import pl.ioad.skyflow.logic.user.payload.response.UserResponse;
 import pl.ioad.skyflow.logic.user.security.jwt.JwtUtils;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,10 +41,8 @@ public class UserService {
     private final PasswordEncoder encoder;
     private final Mapper mapper = new Mapper();
 
-    public UserDto register(RegisterRequest request) {
-        if (!request.getEmail().contains("@") && !request.getEmail().contains(".")) {
-            throw new InvalidDataException("Wrong register input");
-        } else if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+    public UserResponse register(UserDataRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new ForbiddenException("Email is taken");
         }
 
@@ -48,22 +54,25 @@ public class UserService {
                 .profilePictureUrl(request.getPictureUrl())
                 .isAdmin(false)
                 .build());
-        return mapper.mapUser(user);
+        return new UserResponse(
+                CREATED.value(),
+                "Successfully registered user account",
+                mapper.mapUser(user));
 
     }
 
-    public UserDto registerAdmin(RegisterRequest request, HttpServletRequest http) {
+    public UserResponse registerAdmin(UserDataRequest request, HttpServletRequest http) {
         String token = http.getHeader("Authorization");
-        if (token == null)
+        if (token == null) {
             throw new ForbiddenException("You are not authorized");
+        }
         token = token.substring("Bearer ".length());
         var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
-        if (user.isPresent() && !user.get().getIsAdmin())
+        if (user.isPresent() && !user.get().isAdmin()) {
             throw new InvalidBusinessArgumentException("You cannot register new admin as standard user");
-        else if (!request.getEmail().contains("@") && !request.getEmail().contains("."))
-            throw new InvalidDataException("Wrong register input");
-        else if (userRepository.findByEmail(request.getEmail()).isPresent())
+        }   else if (userRepository.existsByEmail(request.getEmail())) {
             throw new ForbiddenException("Email is taken");
+        }
 
         User newUser = userRepository.save(User.builder()
                 .firstName(request.getFirstName())
@@ -73,12 +82,19 @@ public class UserService {
                 .profilePictureUrl(request.getPictureUrl())
                 .isAdmin(true)
                 .build());
-        return mapper.mapUser(newUser);
+        return new UserResponse(
+                CREATED.value(),
+                "Successfully registered admin user account",
+                mapper.mapUser(newUser));
     }
 
     public AuthorizationResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {
-        if (httpServletRequest.getHeader(AUTHORIZATION) != null)
+        if (!userRepository.existsByEmail(request.email())) {
+            throw new EntityNotFoundException("User with given data does not exist");
+        }
+        if (httpServletRequest.getHeader(AUTHORIZATION) != null) {
             throw new AuthException("You cannot log in while you are logged in");
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -88,7 +104,82 @@ public class UserService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = jwtUtils.generateJwtToken(authentication);
-        return new AuthorizationResponse(token);
+        return new AuthorizationResponse(OK.value(), "Successfully logged in", token);
+    }
+
+    public UserResponse update(UpdateDataRequest userData, HttpServletRequest http) {
+        User currentUser = validateToken(http);
+
+        if (userRepository.existsByEmail(userData.getEmail())) {
+            throw new DuplicatedDataException("User with given email already exists");
+        }
+
+        if (!Strings.isNullOrEmpty(userData.getFirstName())) {
+            currentUser.setFirstName(userData.getFirstName());
+        }
+        if (!Strings.isNullOrEmpty(userData.getLastName())) {
+            currentUser.setLastName(userData.getLastName());
+        }
+        if (!Strings.isNullOrEmpty(userData.getEmail())) {
+            currentUser.setEmail(userData.getEmail());
+        }
+        if (!Strings.isNullOrEmpty(userData.getPassword())) {
+            currentUser.setPasswordHash(encoder.encode(userData.getPassword()));
+        }
+        if (!Strings.isNullOrEmpty(userData.getPictureUrl())) {
+            currentUser.setProfilePictureUrl(userData.getPictureUrl());
+        }
+
+        userRepository.save(currentUser);
+
+        return new UserResponse(
+                ACCEPTED.value(),
+                "User data updated",
+                mapper.mapUser(currentUser)
+                );
+    }
+
+    public SimpleResponse changeUserAccountType(Long userId, boolean isAdmin, HttpServletRequest http) {
+        User user = validateToken(http);
+        if (!user.isAdmin()) {
+            throw new ForbiddenException("As a standard user you cannot change account types");
+        }
+        Optional<User> existingUser = userRepository.findById(userId);
+
+        if (existingUser.isEmpty()) {
+            throw new EntityNotFoundException("User with given ID does not exist");
+        }
+
+        existingUser.get().setAdmin(isAdmin);
+        userRepository.save(existingUser.get());
+        String message = isAdmin ? "User account type changed from standard user to admin"
+                : "User account type changed from admin to standard user";
+
+        return new SimpleResponse(
+                ACCEPTED.value(),
+                message
+                );
+    }
+
+    public List<User> getAllUsers(HttpServletRequest http) {
+        if (!validateToken(http).isAdmin()) {
+            throw new ForbiddenException("You cannot display all users");
+        }
+        return userRepository.findAll();
+    }
+
+    protected User validateToken(HttpServletRequest http) {
+        if (http == null)
+            throw new ForbiddenException("Authorization header is null");
+        String token = http.getHeader("Authorization");
+        if (token == null) {
+            throw new ForbiddenException("You have to be logged-in to your account to change data");
+        }
+        token = token.substring("Bearer ".length());
+        var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
+        if (user.isPresent())
+            return user.get();
+        throw new ForbiddenException("You are not authorized");
     }
 
 }

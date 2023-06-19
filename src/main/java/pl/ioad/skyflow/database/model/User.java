@@ -1,5 +1,6 @@
 package pl.ioad.skyflow.database.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,22 +18,21 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @NonNull
+    @Column(nullable = false)
     private String firstName;
 
-    @NonNull
+    @Column(nullable = false)
     private String lastName;
 
-    @NonNull
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @NonNull
+    @Column(nullable = false)
+    @JsonIgnore
     private String passwordHash;
 
-    @NonNull
     private String profilePictureUrl;
 
-    @NonNull
-    private Boolean isAdmin;
+    private boolean isAdmin = false;
 
 }

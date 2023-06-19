@@ -9,9 +9,8 @@ public class Mapper {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .isAdmin(user.getIsAdmin())
+                .isAdmin(user.isAdmin())
                 .profilePictureUrl(user.getProfilePictureUrl())
                 .build();
     }
-
 }
