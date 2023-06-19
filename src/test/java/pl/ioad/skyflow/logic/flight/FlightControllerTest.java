@@ -29,8 +29,8 @@ class FlightControllerTest {
 
     private static final FlightSearchRequest FLIGHT_SEARCH_REQUEST = new FlightSearchRequest(
             "EDDF",
-            1517227200,
-            1517230800
+            "1517227200",
+            "1517230800"
     );
 
     @Autowired
