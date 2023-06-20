@@ -20,16 +20,13 @@ import pl.ioad.skyflow.logic.user.security.jwt.AuthTokenFilter;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private static final String[][] AUTHORIZED_ONLY = {
-            {"/flights/find"}
+    private final String[][] ADMIN_ONLY = {
+            {"/users/register/admin"},
+            {"/users/all", "/users/type", "/upcomingFlights/add", "/upcomingFlights/clear", "/flights/find"}
     };
-    private static final String[][] SWAGGER_WHITELIST = {
-            {"/**/swagger-ui/**", "/**/swagger-resources/**",
-                    "/**/swagger-resources/**", "/**/swagger-ui.html/**",
-                    "/**/webjars/**", "/**/swagger-ui/**"},
-            { "/**/swagger-ui/index.html/**",
-                    "/**/v2/api-docs/**", "/**/configuration/ui/**",
-                    "/**/configuration/security/**", "/**/v3/api-docs/**"}
+
+    private final String[] SWAGGER_WHITELIST = {
+           "/v3/api-docs.yaml", "/v3/api-docs/**","/swagger-ui/**", "/swagger-ui.html"
     };
 
     @Bean
@@ -60,7 +57,9 @@ public class WebSecurityConfig {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-                    .requestMatchers(AUTHORIZED_ONLY[0][0]).hasRole("USER")
+                    .requestMatchers(ADMIN_ONLY[0]).hasRole("ADMIN")
+                    .requestMatchers(SWAGGER_WHITELIST).permitAll()
+                    .requestMatchers(ADMIN_ONLY[1]).hasRole("ADMIN")
                     .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

@@ -364,9 +364,8 @@ public class UserController {
             ),
     })
     public ResponseEntity<SimpleResponse> changeUserAccountType(@RequestParam Long userId,
-                                                                @RequestParam boolean isAdmin,
-                                                                HttpServletRequest http) {
-        return ResponseEntity.accepted().body(userService.changeUserAccountType(userId, isAdmin, http));
+                                                                @RequestParam boolean isAdmin) {
+        return ResponseEntity.accepted().body(userService.changeUserAccountType(userId, isAdmin));
     }
 
     @Operation(summary = "Retrieve all existing users")
@@ -398,8 +397,8 @@ public class UserController {
             ),
     })
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers(HttpServletRequest http) {
-        return ResponseEntity.ok(userService.getAllUsers(http));
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
 
