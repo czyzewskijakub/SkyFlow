@@ -1,20 +1,36 @@
 package pl.ioad.skyflow.logic.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import pl.ioad.skyflow.logic.exception.type.*;
 
 import javax.naming.AuthenticationException;
 import javax.naming.InsufficientResourcesException;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  @NotNull HttpHeaders headers,
+                                                                  @NotNull HttpStatusCode status,
+                                                                  @NotNull WebRequest request) {
+        return ResponseEntity.status(status).body(new ErrorResponse(
+                (HttpStatus) status,
+                ex.getClass().getSimpleName(),
+                ex.getLocalizedMessage()));
+    }
 
     @ExceptionHandler({InvalidBusinessArgumentException.class,
             ParameterException.class,
