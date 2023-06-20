@@ -45,15 +45,16 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new ForbiddenException("Email is taken");
         }
-
-        User user = userRepository.save(User.builder()
+        User user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .passwordHash(encoder.encode(request.getPassword()))
                 .profilePictureUrl(request.getPictureUrl())
                 .isAdmin(false)
-                .build());
+                .build();
+        userRepository.save(user);
+
         return new UserResponse(
                 CREATED.value(),
                 "Successfully registered user account",
