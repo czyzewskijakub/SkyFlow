@@ -5,10 +5,12 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
@@ -30,7 +32,6 @@ public class PayPalController {
     public static final String CURRENCY = "EUR";
 
 
-
     @GetMapping("/payment")
     public String home(@RequestParam Long userId) {
         if (userRepository.findById(userId).isEmpty()) {
@@ -40,7 +41,7 @@ public class PayPalController {
     }
 
     @PostMapping("/pay")
-    public String payment(@RequestParam Long userId) {
+    public ResponseEntity<String> payment(@RequestParam Long userId) throws PayPalRESTException {
         try {
             Optional<User> user = userRepository.findById(userId);
             if (user.isEmpty()) {
@@ -52,20 +53,24 @@ public class PayPalController {
             if (totalPrice == 0) {
                 throw new EntityNotFoundException("Total price is equal to 0.");
             }
+
             Payment payment = service.createPayment(
                     totalPrice,
                     CURRENCY,
                     URL + CANCEL_URL,
                     URL + SUCCESS_URL);
-            for (Links link: payment.getLinks()) {
+            for (Links link : payment.getLinks()) {
                 if (link.getRel().equals("approval_url")) {
-                    return "redirect:" + link.getHref();
+                    String test = link.getHref();
+                    System.out.println(test);
+                    test = test.replace("https://", "");
+                    return ResponseEntity.ok(test);
                 }
             }
         } catch (PayPalRESTException e) {
-            e.printStackTrace();
+            throw new PayPalRESTException("Payment fail");
         }
-        return "redirect:/";
+        return ResponseEntity.ok("");
     }
 
     @GetMapping(value = CANCEL_URL)
@@ -74,15 +79,14 @@ public class PayPalController {
     }
 
     @GetMapping(value = SUCCESS_URL)
-    public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam ("PayerID") String payerId) {
+    public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException {
         try {
-            Payment payment = service.executePayment(paymentId,payerId);
-            System.out.println(payment.toJSON());
+            Payment payment = service.executePayment(paymentId, payerId);
             if (payment.getState().equals("approved")) {
                 return "success.html";
             }
         } catch (PayPalRESTException e) {
-            System.out.println(e.getMessage());
+            throw new PayPalRESTException("Payment fail");
         }
         return "redirect:/";
     }

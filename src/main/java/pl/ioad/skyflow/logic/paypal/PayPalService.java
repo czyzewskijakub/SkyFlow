@@ -30,7 +30,7 @@ public class PayPalService {
         DecimalFormat df = new DecimalFormat("#.##");
         amount.setTotal(df.format(total));
         Transaction transaction = new Transaction();
-        //transaction.setDescription("Test");
+        transaction.setDescription("Test");
         transaction.setAmount(amount);
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(transaction);
