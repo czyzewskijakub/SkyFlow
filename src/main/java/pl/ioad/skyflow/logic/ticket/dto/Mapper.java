@@ -1,12 +1,11 @@
-package pl.ioad.skyflow.logic.reservation.dto;
+package pl.ioad.skyflow.logic.ticket.dto;
 
 import org.springframework.stereotype.Service;
-import pl.ioad.skyflow.database.model.Reservation;
 
 @Service
 public class Mapper {
-    public ReservationDTO map(Reservation reservation) {
-        return new ReservationDTO
+    public TicketDTO map(Reservation reservation) {
+        return new TicketDTO
                 .ReservationDTOBuilder()
                 .reservationId(reservation.getReservationId())
                 .build();

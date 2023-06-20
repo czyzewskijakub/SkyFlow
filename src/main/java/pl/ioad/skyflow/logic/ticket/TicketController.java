@@ -1,4 +1,4 @@
-package pl.ioad.skyflow.logic.reservation;
+package pl.ioad.skyflow.logic.ticket;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,19 +11,19 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.ioad.skyflow.logic.reservation.dto.ReservationDTO;
-import pl.ioad.skyflow.logic.reservation.payload.request.CancelRequest;
-import pl.ioad.skyflow.logic.reservation.payload.request.FlightRequest;
-import pl.ioad.skyflow.logic.reservation.payload.response.ReservationResponse;
+import pl.ioad.skyflow.logic.ticket.dto.TicketDTO;
+import pl.ioad.skyflow.logic.ticket.payload.request.CancelRequest;
+import pl.ioad.skyflow.logic.ticket.payload.request.FlightRequest;
+import pl.ioad.skyflow.logic.ticket.payload.response.TicketResponse;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/flights")
 @RequiredArgsConstructor
-public class ReservationController {
+public class TicketController {
 
-    private final ReservationService reservationService;
+    private final TicketService ticketService;
 
     @Operation(summary = "Book a flight")
     @ApiResponses(value = {
@@ -77,16 +77,16 @@ public class ReservationController {
             )
     })
     @PostMapping("/book")
-    public ResponseEntity<ReservationResponse> bookFlight(
+    public ResponseEntity<TicketResponse> book(
             @Parameter(description = "Flight booking request body", required = true)
             @Valid @RequestBody FlightRequest request,
             @Parameter(description = "HTTP Servlet Request", required = true)
             HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(reservationService.bookFlight(request, httpServletRequest));
+        return ResponseEntity.ok().body(ticketService.bookFlight(request, httpServletRequest));
     }
 
 
-    @Operation(summary = "Cancel a flight reservation")
+    @Operation(summary = "Cancel a flight ticket")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully cancelled flight", content = @Content(
                     schema = @Schema(example = """
@@ -138,21 +138,21 @@ public class ReservationController {
             ),
     })
     @PostMapping("/cancel")
-    public ResponseEntity<ReservationResponse> cancelReservation(
+    public ResponseEntity<TicketResponse> cancel(
             @Parameter(description = "Flight cancellation request body", required = true)
             @Valid @RequestBody CancelRequest request,
             @Parameter(description = "HTTP Servlet Request", required = true)
             HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(reservationService.cancelFlight(request, httpServletRequest));
+        return ResponseEntity.ok().body(ticketService.cancelFlight(request, httpServletRequest));
     }
 
-    @Operation(summary = "Get your reservations")
+    @Operation(summary = "Get your tickets")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved user flights", content = @Content(
                     schema = @Schema(example = """
                                                 [
                                                   {
-                                                    "reservationId": 2
+                                                    "ticketId": 2
                                                   }
                                                 ]
                                                 """
@@ -199,11 +199,10 @@ public class ReservationController {
                     ))
             )
     })
-    @GetMapping("/reservations")
-    public ResponseEntity<List<ReservationDTO>> getUserReservation(@Parameter(description = "HTTP Servlet Request",
-            required = true)
+    @GetMapping("/tickets")
+    public ResponseEntity<List<TicketDTO>> getTickets(@Parameter(description = "HTTP Servlet Request", required = true)
                                                                    HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(reservationService.retrieveReservations(httpServletRequest));
+        return ResponseEntity.ok().body(ticketService.retrieveTickets(httpServletRequest));
     }
 
 }

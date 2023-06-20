@@ -1,4 +1,4 @@
-package pl.ioad.skyflow.logic.reservation.payload.request;
+package pl.ioad.skyflow.logic.ticket.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;

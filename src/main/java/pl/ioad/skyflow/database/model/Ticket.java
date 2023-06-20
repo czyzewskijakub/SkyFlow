@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
-
 @Builder
 @Getter
 @Setter
@@ -14,27 +12,12 @@ import java.util.Date;
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Entity
-@Table(name = "reservations")
-public class Reservation {
+@Table(name = "tickets")
+public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reservation_id")
-    private Long reservationId;
-
-    @NonNull
-    private Date departureDate;
-
-    @NonNull
-    private Date arrivalDate;
-
-    @NonNull
-    private String departureAirport;
-
-    @NonNull
-    private String arrivalAirport;
-
-    @NonNull
-    private String airline;
+    @Column(name = "ticket_id")
+    private Long ticketId;
 
     @NonNull
     private String travelClass;
@@ -43,7 +26,29 @@ public class Reservation {
     private String seatNumber;
 
     @NonNull
+    private Double price;
+
+    @NonNull
+    private String name;
+
+    @NonNull
+    private String surname;
+
+    @NonNull
+    private String identificationNumber;
+
+    @NonNull
+    private TicketStatus status;
+
+    @NonNull
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "flight_id")
+    private UpcomingFlight flight;
+
 }
+
