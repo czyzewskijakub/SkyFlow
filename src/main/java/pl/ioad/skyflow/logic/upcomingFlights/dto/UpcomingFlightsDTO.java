@@ -11,7 +11,7 @@ import java.util.Date;
 public record UpcomingFlightsDTO (
     @Schema(description = "id of vehicle", example = "3c4ad0")
     String icao24,
-    @Schema(description = "date of the departure", example = "2023-07-12")
+    @Schema(description = "date of the departure", example = "2023-07-12 12:50")
     Date departureDate,
     @Schema(description = "departure airport code", example = "BAR")
     String departureAirport,

@@ -7,6 +7,8 @@ import lombok.Builder;
 @Builder
 public record TicketDTO(
     @Schema(description = "ID number of flight ticket", example = "1")
-    Long ticketId
+    Long ticketId,
+    @Schema(description = "price of ticket in EUR", example = "100")
+    Double price
 ) {
 }
