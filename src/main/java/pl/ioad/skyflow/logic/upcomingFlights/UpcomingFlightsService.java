@@ -1,6 +1,5 @@
 package pl.ioad.skyflow.logic.upcomingFlights;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.UpcomingFlight;
@@ -18,7 +17,7 @@ public class UpcomingFlightsService {
     private final UpcomingFlightRepository upcomingFlightRepository;
     private final UpcomingFlightsMapper upcomingFlightsMapper;
 
-    public UpcomingFlightsResponse addFlight(UpcomingFlightRequest request, HttpServletRequest http) {
+    public UpcomingFlightsResponse addFlight(UpcomingFlightRequest request) {
         UpcomingFlight flight = UpcomingFlight.builder()
                 .icao24(request.icao24())
                 .departureDate(request.departureDate())

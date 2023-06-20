@@ -4,11 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsDTO;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.request.UpcomingFlightRequest;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.response.UpcomingFlightsResponse;
@@ -32,16 +35,16 @@ public class UpcomingFlightsController {
     @PostMapping("/add")
     public ResponseEntity<UpcomingFlightsResponse> addFlight(
             @Parameter(description = "Flight adding request body", required = true)
-            @Valid @RequestBody UpcomingFlightRequest request,
-            @Parameter(description = "HTTP Servlet Request", required = true)
-            HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(upcomingFlightsService.addFlight(request,httpServletRequest));
+            @Valid @RequestBody UpcomingFlightRequest request) {
+        return ResponseEntity.ok().body(upcomingFlightsService.addFlight(request));
     }
+
     @Operation(summary = "Get all flights")
     @GetMapping("/getAll")
     public ResponseEntity<List<UpcomingFlightsDTO>> getFlights() {
         return ResponseEntity.ok().body(upcomingFlightsService.getFlights());
     }
+
     @Operation(summary = "Clear all flights")
     @GetMapping("/clear")
     public ResponseEntity<UpcomingFlightsResponse> clearFlights() {
