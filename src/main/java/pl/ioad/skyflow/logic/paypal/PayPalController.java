@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.ioad.skyflow.database.repository.UserRepository;
 
 
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/paypal")
 public class PayPalController {
 
 
