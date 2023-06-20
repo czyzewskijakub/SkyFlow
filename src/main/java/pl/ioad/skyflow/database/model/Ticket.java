@@ -8,7 +8,6 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-@JsonFormat(pattern="yyyy-MM-dd")
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Entity

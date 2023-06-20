@@ -16,7 +16,7 @@ import pl.ioad.skyflow.logic.exception.type.AuthException;
 import pl.ioad.skyflow.logic.exception.type.DuplicatedDataException;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
-import pl.ioad.skyflow.logic.user.dto.Mapper;
+import pl.ioad.skyflow.logic.user.dto.UserMapper;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UpdateDataRequest;
 import pl.ioad.skyflow.logic.user.payload.request.UserDataRequest;
@@ -39,7 +39,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder encoder;
-    private final Mapper mapper = new Mapper();
+    private final UserMapper userMapper = new UserMapper();
 
     public UserResponse register(UserDataRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -57,7 +57,7 @@ public class UserService {
         return new UserResponse(
                 CREATED.value(),
                 "Successfully registered user account",
-                mapper.mapUser(user));
+                userMapper.mapUser(user));
 
     }
 
@@ -85,7 +85,7 @@ public class UserService {
         return new UserResponse(
                 CREATED.value(),
                 "Successfully registered admin user account",
-                mapper.mapUser(newUser));
+                userMapper.mapUser(newUser));
     }
 
     public AuthorizationResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {
@@ -135,7 +135,7 @@ public class UserService {
         return new UserResponse(
                 ACCEPTED.value(),
                 "User data updated",
-                mapper.mapUser(currentUser)
+                userMapper.mapUser(currentUser)
                 );
     }
 
