@@ -1,7 +1,6 @@
 package pl.ioad.skyflow.database.model;
 
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +18,7 @@ public class Ticket {
     private Long ticketId;
 
     @NonNull
-    private String travelClass;
+    private TravelClass travelClass;
 
     @NonNull
     private String seatNumber;

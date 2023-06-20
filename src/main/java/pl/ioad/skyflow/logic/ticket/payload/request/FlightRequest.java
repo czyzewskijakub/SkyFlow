@@ -24,7 +24,7 @@ public class FlightRequest {
     @Schema(description = "price of ticket in EUR", example = "100")
     private Double price;
     @NonNull
-    @Schema(description = "class", example = "business")
+    @Schema(description = "class", example = "ECONOMY")
     private String travelClass;
     @NonNull
     @Schema(description = "ticket owner's name", example = "Rafał")
@@ -35,8 +35,5 @@ public class FlightRequest {
     @NonNull
     @Schema(description = "number from id document", example = "PL2314132")
     private String identificationNumber;
-    @NonNull
-    @Schema(description = "status", example = "RESERVED")
-    private String status;
 
 }

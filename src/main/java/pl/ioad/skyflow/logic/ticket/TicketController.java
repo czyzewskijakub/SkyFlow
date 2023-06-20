@@ -11,15 +11,16 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.ioad.skyflow.database.model.TicketStatus;
+import pl.ioad.skyflow.database.model.TravelClass;
 import pl.ioad.skyflow.logic.ticket.dto.TicketDTO;
-import pl.ioad.skyflow.logic.ticket.payload.request.CancelRequest;
 import pl.ioad.skyflow.logic.ticket.payload.request.FlightRequest;
 import pl.ioad.skyflow.logic.ticket.payload.response.TicketResponse;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/flights")
+@RequestMapping("/tickets")
 @RequiredArgsConstructor
 public class TicketController {
 
@@ -137,13 +138,13 @@ public class TicketController {
                     ))
             ),
     })
-    @PostMapping("/cancel")
+    @PutMapping("/cancel")
     public ResponseEntity<TicketResponse> cancel(
-            @Parameter(description = "Flight cancellation request body", required = true)
-            @Valid @RequestBody CancelRequest request,
+            @Parameter(description = "Flight cancellation ticket id", required = true)
+            @Valid @RequestParam Long ticketId,
             @Parameter(description = "HTTP Servlet Request", required = true)
             HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(ticketService.cancelFlight(request, httpServletRequest));
+        return ResponseEntity.ok().body(ticketService.cancelTicket(ticketId, httpServletRequest));
     }
 
     @Operation(summary = "Get your tickets")
@@ -199,10 +200,120 @@ public class TicketController {
                     ))
             )
     })
-    @GetMapping("/tickets")
+    @GetMapping
     public ResponseEntity<List<TicketDTO>> getTickets(@Parameter(description = "HTTP Servlet Request", required = true)
                                                                    HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(ticketService.retrieveTickets(httpServletRequest));
+    }
+
+    @Operation(summary = "Get all possible travel classes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved travel classes", content = @Content(
+                    schema = @Schema(example = """
+                                                [
+                                                  "ECONOMY",
+                                                  "PREMIUM",
+                                                  "BUSINESS",
+                                                  "FIRST"
+                                                ]
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "400", description = "Not correct request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            )
+    })
+    @GetMapping("/classes")
+    public ResponseEntity<List<TravelClass>> getClasses() {
+        return ResponseEntity.ok().body(ticketService.getClasses());
+    }
+
+    @Operation(summary = "Change status for the given ticket as an admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully changed ticket status", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                    "message": "Successfully changed ticket status"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "400", description = "Not correct request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "403", description = "You cannot perform the operation", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "404", description = "Ticket not found", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 404,
+                                                  "exception": "Exception",
+                                                  "message": "Not found"
+                                                }
+                                                """
+                    ))
+            )
+    })
+    @PutMapping("/status/{ticketId}")
+    public ResponseEntity<TicketResponse> changeTicketStatus(@PathVariable Long ticketId, @RequestParam TicketStatus status) {
+        return ResponseEntity.ok().body(ticketService.changeTicketStatus(ticketId, status));
+    }
+
+    @GetMapping("/users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved all users tickets", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                    "message": "Successfully retrieved all users tickets"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "400", description = "Not correct request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "403", description = "You cannot perform the operation", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 403,
+                                                  "exception": "Exception",
+                                                  "message": "Forbidden"
+                                                }
+                                                """
+                    ))
+            )
+    })
+    public ResponseEntity<List<TicketDTO>> getAllUsersTickets() {
+        return ResponseEntity.ok().body(ticketService.retrieveAllUsersTickets());
     }
 
 }

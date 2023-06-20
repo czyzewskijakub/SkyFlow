@@ -21,8 +21,9 @@ import pl.ioad.skyflow.logic.user.security.jwt.AuthTokenFilter;
 public class WebSecurityConfig {
 
     private final String[][] ADMIN_ONLY = {
-            {"/users/register/admin"},
-            {"/users/all", "/users/type", "/upcomingFlights/add", "/upcomingFlights/clear", "/flights/find"}
+            {"/users/register/admin", "/tickets/classes/{ticketId}"},
+            {"/users/all", "/users/type", "/upcomingFlights/add", "/upcomingFlights/clear",
+                    "/flights/find", "/tickets/users"}
     };
 
     private final String[] SWAGGER_WHITELIST = {
