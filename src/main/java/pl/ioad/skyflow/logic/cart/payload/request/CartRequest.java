@@ -6,6 +6,5 @@ import lombok.NonNull;
 public record CartRequest(
         @NonNull
         @Schema(description = "id of ticket to add/remove from cart", example = "1")
-        Long ticketId
-) {
+        Long ticketId) {
 }

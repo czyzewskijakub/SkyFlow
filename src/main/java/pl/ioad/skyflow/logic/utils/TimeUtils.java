@@ -10,14 +10,14 @@ import static java.time.ZoneOffset.UTC;
 public abstract class TimeUtils {
 
     public static String toUnixTime(String dateTime) {
-        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         var localDateTime = LocalDateTime.parse(dateTime, formatter);
         return String.valueOf(localDateTime.toEpochSecond(UTC));
     }
 
     public static String toDateTime(String unixTime) {
         var date = new Date(Long.parseLong(unixTime) * 1000);
-        var sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        var sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return sdf.format(date);
     }
 
