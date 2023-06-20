@@ -6,7 +6,7 @@ import lombok.Builder;
 
 @Builder
 public record TicketDTO(
-    @Schema(description = "ID number of flight reservation", example = "1")
+    @Schema(description = "ID number of flight ticket", example = "1")
     Long ticketId
 ) {
 }
