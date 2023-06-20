@@ -32,9 +32,10 @@ public class SkyFlowSwaggerConfiguration {
                                                 .bearerFormat("JWT"))
                 )
                 .info(new Info()
-                .title("SkyFlow API")
-                .version("1.0.0")
-                .description("SkyFlow flights reservations system documentation"));
+                    .title("SkyFlow API")
+                    .version("1.0.0")
+                    .description("SkyFlow flights reservations system documentation")
+                );
     }
 }
 
