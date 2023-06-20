@@ -40,7 +40,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getClass().getSimpleName(),
                 ex.getLocalizedMessage()));
     }
-
     @ExceptionHandler({InvalidBusinessArgumentException.class,
             ParameterException.class,
             InvalidDataException.class,
