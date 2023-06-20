@@ -21,6 +21,9 @@ public class UpcomingFlight {
     private Long flightId;
 
     @NonNull
+    private String icao24;
+
+    @NonNull
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date departureDate;
 

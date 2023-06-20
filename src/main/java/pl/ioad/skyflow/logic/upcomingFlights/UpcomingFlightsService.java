@@ -20,6 +20,7 @@ public class UpcomingFlightsService {
 
     public UpcomingFlightsResponse addFlight(UpcomingFlightRequest request, HttpServletRequest http) {
         UpcomingFlight flight = UpcomingFlight.builder()
+                .icao24(request.icao24())
                 .departureDate(request.departureDate())
                 .departureAirport(request.departureAirport())
                 .arrivalAirport(request.arrivalAirport())

@@ -7,6 +7,11 @@ import lombok.*;
 import java.util.Date;
 
 public record UpcomingFlightRequest (
+
+    @NonNull
+    @Schema(description = "id of vehicle", example = "3c4ad0")
+    String icao24,
+
     @NonNull
     @Schema(description = "Date of departure", pattern = "yyyy-MM-dd HH:mm" )
     @JsonFormat(pattern="yyyy-MM-dd HH:mm")

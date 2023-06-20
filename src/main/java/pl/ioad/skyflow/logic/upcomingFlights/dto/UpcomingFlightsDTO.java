@@ -9,6 +9,8 @@ import java.util.Date;
 @Builder
 @JsonFormat(pattern="yyyy-MM-dd HH:mm")
 public record UpcomingFlightsDTO (
+    @Schema(description = "id of vehicle", example = "3c4ad0")
+    String icao24,
     @Schema(description = "date of the departure", example = "2023-07-12")
     Date departureDate,
     @Schema(description = "departure airport code", example = "BAR")
