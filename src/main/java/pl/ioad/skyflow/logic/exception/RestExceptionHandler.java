@@ -19,6 +19,9 @@ import pl.ioad.skyflow.logic.exception.type.*;
 import javax.naming.AuthenticationException;
 import javax.naming.InsufficientResourcesException;
 
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.ResponseEntity.status;
+
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -27,7 +30,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                                                   @NotNull HttpHeaders headers,
                                                                   @NotNull HttpStatusCode status,
                                                                   @NotNull WebRequest request) {
-        return ResponseEntity.status(status).body(new ErrorResponse(
+        return status(status).body(new ErrorResponse(
                 (HttpStatus) status,
                 ex.getClass().getSimpleName(),
                 ex.getLocalizedMessage()));
@@ -35,7 +38,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {AccessDeniedException.class})
     protected ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex, @NotNull HttpStatusCode status) {
-        return ResponseEntity.status(status).body(new ErrorResponse(
+        return status(status).body(new ErrorResponse(
                 (HttpStatus) status,
                 ex.getClass().getSimpleName(),
                 ex.getLocalizedMessage()));
@@ -46,30 +49,31 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
             InvalidDataException.class,
             DuplicatedDataException.class})
     public final ResponseEntity<Object> handleException(RuntimeException exception) {
-        return handleResponse(HttpStatus.NOT_ACCEPTABLE, exception);
+        return handleResponse(NOT_ACCEPTABLE, exception);
     }
     @ExceptionHandler({AuthException.class, AuthenticationException.class, InsufficientResourcesException.class,
             BadCredentialsException.class})
     public final ResponseEntity<Object> handleAuth(RuntimeException exception) {
-        return handleResponse(HttpStatus.UNAUTHORIZED, exception);
+        return handleResponse(UNAUTHORIZED, exception);
     }
     @ExceptionHandler({ForbiddenException.class, InsufficientAuthenticationException.class})
     public final ResponseEntity<Object> handleForbiddenException(RuntimeException exception) {
-        return handleResponse(HttpStatus.FORBIDDEN, exception);
+        return handleResponse(FORBIDDEN, exception);
     }
     @ExceptionHandler({EntityNotFoundException.class})
     public final ResponseEntity<Object> handleNotFound(RuntimeException exception) {
-        return handleResponse(HttpStatus.NOT_FOUND, exception);
+        return handleResponse(NOT_FOUND, exception);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleException(Exception exception) {
-        return handleResponse(HttpStatus.BAD_REQUEST, (RuntimeException) exception);
+        return handleResponse(BAD_REQUEST, (RuntimeException) exception);
     }
 
-    public final ResponseEntity<Object> handleResponse(HttpStatus httpStatus, RuntimeException exception) {
-        return ResponseEntity.status(httpStatus).body(new ErrorResponse(httpStatus,
-                                                                    exception.getClass().getSimpleName(),
-                                                                    exception.getMessage()));
+    private ResponseEntity<Object> handleResponse(HttpStatus httpStatus, RuntimeException exception) {
+        return status(httpStatus).body(new ErrorResponse(
+                httpStatus,
+                exception.getClass().getSimpleName(),
+                exception.getMessage()));
     }
 }
