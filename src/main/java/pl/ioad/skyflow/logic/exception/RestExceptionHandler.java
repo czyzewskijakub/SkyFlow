@@ -36,7 +36,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getLocalizedMessage()));
     }
 
-    @ExceptionHandler(value = {AccessDeniedException.class})
+    @ExceptionHandler({AccessDeniedException.class})
     protected ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex, @NotNull HttpStatusCode status) {
         return status(status).body(new ErrorResponse(
                 (HttpStatus) status,

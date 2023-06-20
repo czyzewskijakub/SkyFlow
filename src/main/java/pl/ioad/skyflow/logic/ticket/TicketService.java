@@ -4,26 +4,25 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.ioad.skyflow.database.model.Cart;
-import pl.ioad.skyflow.database.model.Ticket;
-import pl.ioad.skyflow.database.model.TravelClass;
-import pl.ioad.skyflow.database.model.User;
+import pl.ioad.skyflow.database.model.*;
 import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.TicketRepository;
 import pl.ioad.skyflow.database.repository.UpcomingFlightRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
+import pl.ioad.skyflow.logic.exception.type.InvalidDataException;
 import pl.ioad.skyflow.logic.ticket.dto.TicketDTO;
 import pl.ioad.skyflow.logic.ticket.dto.TicketMapper;
-import pl.ioad.skyflow.logic.ticket.payload.request.CancelRequest;
 import pl.ioad.skyflow.logic.ticket.payload.request.FlightRequest;
 import pl.ioad.skyflow.logic.ticket.payload.response.TicketResponse;
 import pl.ioad.skyflow.logic.user.security.jwt.JwtUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import static pl.ioad.skyflow.database.model.TicketStatus.CANCELLED;
 import static pl.ioad.skyflow.database.model.TicketStatus.RESERVED;
 
 
@@ -35,11 +34,11 @@ public class TicketService {
     private final UpcomingFlightRepository flightRepository;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
-    private final TicketMapper ticketMapper;
+    private final TicketMapper ticketMapper = new TicketMapper();
 
     public TicketResponse bookFlight(FlightRequest request, HttpServletRequest http) {
         User user = extractUser(http);
-        var flight = flightRepository.findById(request.getFlightId());
+        Optional<UpcomingFlight> flight = flightRepository.findById(request.getFlightId());
         if (flight.isEmpty()) {
             throw new EntityNotFoundException("Give flight does not exist");
         }
@@ -60,21 +59,36 @@ public class TicketService {
                 .ticket(ticket)
                 .additionDate(new Date())
                 .build());
+
+        if (flight.get().getCapacity() == 0) {
+            throw new InvalidBusinessArgumentException("Capacity of flight is 0");
+        }
+
+        flight.get().setCapacity(flight.get().getCapacity() - 1);
+        flightRepository.save(flight.get());
+
         return new TicketResponse("Successfully booked flight");
     }
 
-    public TicketResponse cancelFlight(CancelRequest request, HttpServletRequest http) {
+    public TicketResponse cancelTicket(Long ticketId, HttpServletRequest http) {
         User user = extractUser(http);
 
-        var reservation = ticketRepository.findById(request.ticketId());
-        if (reservation.isEmpty()) {
+        Optional<Ticket> ticket = ticketRepository.findById(ticketId);
+        if (ticket.isEmpty()) {
             throw new InvalidBusinessArgumentException("This reservation does not exist");
         }
-        if (!reservation.get().getUser().getUserId().equals(user.getUserId())) {
+        if (!ticket.get().getUser().getUserId().equals(user.getUserId())) {
             throw new InvalidBusinessArgumentException("You were not booked for this flight");
         }
+        if (ticket.get().getStatus().equals(CANCELLED)) {
+            throw new InvalidDataException("Flight is already cancelled");
+        }
 
-        ticketRepository.delete(reservation.get());
+        ticket.get().setStatus(CANCELLED);
+
+        UpcomingFlight flight = ticket.get().getFlight();
+        flight.setCapacity(flight.getCapacity() + 1);
+        flightRepository.save(flight);
 
         return new TicketResponse("Successfully canceled flight");
     }
@@ -83,8 +97,28 @@ public class TicketService {
         User user = extractUser(http);
         return ticketRepository.findAll().stream()
                 .filter(e -> e.getUser().getUserId().equals(user.getUserId()))
-                .map(ticketMapper::map)
+                .map(ticketMapper::mapTicket)
                 .toList();
+    }
+
+    public List<TravelClass> getClasses() {
+        return List.of(TravelClass.values());
+    }
+
+    public TicketResponse changeTicketStatus(Long ticketId, TicketStatus status) {
+        Optional<Ticket> ticket = ticketRepository.findById(ticketId);
+        if (ticket.isEmpty()) {
+            throw new EntityNotFoundException("Ticket with given ID does not exist");
+        }
+
+        ticket.get().setStatus(status);
+
+        ticketRepository.save(ticket.get());
+        return new TicketResponse("Successfully changed ticket status");
+    }
+
+    public List<TicketDTO> retrieveAllUsersTickets() {
+        return ticketRepository.findAll().stream().map(ticketMapper::mapTicket).toList();
     }
 
     public User extractUser(HttpServletRequest http) {
@@ -94,16 +128,12 @@ public class TicketService {
         }
         token = token.substring("Bearer ".length());
 
-        var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
+        Optional<User> user = userRepository.findByEmail(jwtUtils.extractUsername(token));
         if (user.isEmpty()) {
             throw new ForbiddenException("You need to be logged in");
         }
 
         return user.get();
-    }
-
-    public List<TravelClass> getClasses() {
-        return List.of(TravelClass.values());
     }
 
 }
