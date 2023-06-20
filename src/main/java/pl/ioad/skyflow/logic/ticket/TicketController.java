@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.ioad.skyflow.database.model.TravelClass;
 import pl.ioad.skyflow.logic.ticket.dto.TicketDTO;
 import pl.ioad.skyflow.logic.ticket.payload.request.CancelRequest;
 import pl.ioad.skyflow.logic.ticket.payload.request.FlightRequest;
@@ -204,5 +205,35 @@ public class TicketController {
                                                                    HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(ticketService.retrieveTickets(httpServletRequest));
     }
+
+    @Operation(summary = "Get all possible travel classes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved user flights", content = @Content(
+                    schema = @Schema(example = """
+                                                [
+                                                  "ECONOMY",
+                                                  "PREMIUM",
+                                                  "BUSINESS",
+                                                  "FIRST"
+                                                ]
+                                                """
+                    ))
+            ),
+            @ApiResponse(responseCode = "400", description = "Not correct request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    ))
+            )
+    })
+    @GetMapping("/classes")
+    public ResponseEntity<List<TravelClass>> getClasses() {
+        return ResponseEntity.ok().body(ticketService.getClasses());
+    }
+
 
 }

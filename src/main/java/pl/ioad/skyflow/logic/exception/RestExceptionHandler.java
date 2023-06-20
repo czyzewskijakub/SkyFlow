@@ -50,15 +50,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<Object> handleException(RuntimeException exception) {
         return handleResponse(NOT_ACCEPTABLE, exception);
     }
+
     @ExceptionHandler({AuthException.class, AuthenticationException.class, InsufficientResourcesException.class,
             BadCredentialsException.class})
     public final ResponseEntity<Object> handleAuth(RuntimeException exception) {
         return handleResponse(UNAUTHORIZED, exception);
     }
+
     @ExceptionHandler({ForbiddenException.class, InsufficientAuthenticationException.class})
     public final ResponseEntity<Object> handleForbiddenException(RuntimeException exception) {
         return handleResponse(FORBIDDEN, exception);
     }
+
     @ExceptionHandler({EntityNotFoundException.class})
     public final ResponseEntity<Object> handleNotFound(RuntimeException exception) {
         return handleResponse(NOT_FOUND, exception);

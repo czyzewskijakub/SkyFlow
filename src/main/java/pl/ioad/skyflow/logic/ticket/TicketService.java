@@ -6,17 +6,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.Cart;
 import pl.ioad.skyflow.database.model.Ticket;
-import pl.ioad.skyflow.database.model.TicketStatus;
+import pl.ioad.skyflow.database.model.TravelClass;
 import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.TicketRepository;
 import pl.ioad.skyflow.database.repository.UpcomingFlightRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
-import pl.ioad.skyflow.logic.cart.CartService;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
-import pl.ioad.skyflow.logic.ticket.dto.TicketMapper;
 import pl.ioad.skyflow.logic.ticket.dto.TicketDTO;
+import pl.ioad.skyflow.logic.ticket.dto.TicketMapper;
 import pl.ioad.skyflow.logic.ticket.payload.request.CancelRequest;
 import pl.ioad.skyflow.logic.ticket.payload.request.FlightRequest;
 import pl.ioad.skyflow.logic.ticket.payload.response.TicketResponse;
@@ -24,6 +23,8 @@ import pl.ioad.skyflow.logic.user.security.jwt.JwtUtils;
 
 import java.util.Date;
 import java.util.List;
+
+import static pl.ioad.skyflow.database.model.TicketStatus.RESERVED;
 
 
 @Service
@@ -46,10 +47,10 @@ public class TicketService {
                 .flight(flight.get())
                 .user(user)
                 .identificationNumber(request.getIdentificationNumber())
-                .status(TicketStatus.valueOf(request.getStatus()))
+                .status(RESERVED)
                 .name(request.getName())
                 .surname(request.getSurname())
-                .travelClass(request.getTravelClass())
+                .travelClass(TravelClass.valueOf(request.getTravelClass()))
                 .price(request.getPrice())
                 .seatNumber(request.getSeatNumber())
                 .build();
@@ -66,10 +67,12 @@ public class TicketService {
         User user = extractUser(http);
 
         var reservation = ticketRepository.findById(request.ticketId());
-        if (reservation.isEmpty())
+        if (reservation.isEmpty()) {
             throw new InvalidBusinessArgumentException("This reservation does not exist");
-        if (!reservation.get().getUser().getUserId().equals(user.getUserId()))
+        }
+        if (!reservation.get().getUser().getUserId().equals(user.getUserId())) {
             throw new InvalidBusinessArgumentException("You were not booked for this flight");
+        }
 
         ticketRepository.delete(reservation.get());
 
@@ -86,14 +89,21 @@ public class TicketService {
 
     public User extractUser(HttpServletRequest http) {
         String token = http.getHeader("Authorization");
-        if (token == null)
+        if (token == null) {
             throw new ForbiddenException("You are not authorized");
+        }
         token = token.substring("Bearer ".length());
 
         var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
-        if (user.isEmpty())
+        if (user.isEmpty()) {
             throw new ForbiddenException("You need to be logged in");
+        }
+
         return user.get();
+    }
+
+    public List<TravelClass> getClasses() {
+        return List.of(TravelClass.values());
     }
 
 }
