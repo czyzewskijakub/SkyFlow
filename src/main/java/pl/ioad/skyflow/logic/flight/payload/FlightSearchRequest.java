@@ -11,12 +11,12 @@ public record FlightSearchRequest(
         @Schema(description = "ICAO code of airport", example = "EDDF")
         @NotBlank
         String departureAirport,
-        @Schema(description = "begin date", example = "2023-06-17 00:00:00")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH-mm-ss")
+        @Schema(description = "begin date", example = "2023-06-17 00:00")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
         @NotBlank
         String begin,
-        @Schema(description = "begin date", example = "2023-06-17 23:59:59")
-        @DateTimeFormat(pattern = "yyyy-MM-dd HH-mm-ss")
+        @Schema(description = "begin date", example = "2023-06-17 23:59")
+        @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
         @NotBlank
         String end) {
 

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.ioad.skyflow.database.model.UpcomingFlight;
 import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class FlightController {
             @ApiResponse(responseCode = "400", description = "Bad request"),
     })
     @PostMapping(value = "/find", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Flight>> findDepartures(@Parameter(description = "Flight search request", required = true)
+    public ResponseEntity<List<UpcomingFlight>> findDepartures(@Parameter(description = "Flight search request", required = true)
                                                        @RequestBody FlightSearchRequest request) {
 
         return ok().body(flightService.findFlight(request));
