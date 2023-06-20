@@ -39,7 +39,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder encoder;
-    private final UserMapper userMapper = new UserMapper();
+    private final UserMapper userMapper;
 
     public UserResponse register(UserDataRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {

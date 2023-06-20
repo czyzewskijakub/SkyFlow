@@ -9,6 +9,7 @@ import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.TicketRepository;
 import pl.ioad.skyflow.database.repository.UpcomingFlightRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
+import pl.ioad.skyflow.logic.exception.type.DuplicatedDataException;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
 import pl.ioad.skyflow.logic.exception.type.InvalidDataException;
@@ -34,14 +35,20 @@ public class TicketService {
     private final UpcomingFlightRepository flightRepository;
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
-    private final TicketMapper ticketMapper = new TicketMapper();
+    private final TicketMapper ticketMapper;
 
     public TicketResponse bookFlight(FlightRequest request, HttpServletRequest http) {
+        if (ticketRepository.existsBySeatNumber(request.getSeatNumber())) {
+            throw new DuplicatedDataException("This seat number is already taken");
+        }
         User user = extractUser(http);
         Optional<UpcomingFlight> flight = flightRepository.findById(request.getFlightId());
         if (flight.isEmpty()) {
             throw new EntityNotFoundException("Give flight does not exist");
         }
+
+        TravelClass travelClass = TravelClass.valueOf(request.getTravelClass());
+
         Ticket ticket = Ticket.builder()
                 .flight(flight.get())
                 .user(user)
@@ -49,8 +56,8 @@ public class TicketService {
                 .status(RESERVED)
                 .name(request.getName())
                 .surname(request.getSurname())
-                .travelClass(TravelClass.valueOf(request.getTravelClass()))
-                .price(request.getPrice())
+                .travelClass(travelClass)
+                .price(request.getPrice() * travelClass.getWeight())
                 .seatNumber(request.getSeatNumber())
                 .build();
         ticketRepository.save(ticket);
