@@ -1,22 +1,21 @@
 package pl.ioad.skyflow.logic.cart;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.ioad.skyflow.database.model.Cart;
 import pl.ioad.skyflow.logic.cart.dto.CartDTO;
 import pl.ioad.skyflow.logic.cart.payload.request.CartRequest;
-import pl.ioad.skyflow.logic.cart.payload.request.RemoveFromCartRequest;
 import pl.ioad.skyflow.logic.cart.payload.response.AddToCartResponse;
 import pl.ioad.skyflow.logic.cart.payload.response.CheckoutResponse;
 import pl.ioad.skyflow.logic.cart.payload.response.RemoveFromCartResponse;
-import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsDTO;
 
 import java.util.List;
 
@@ -80,7 +79,8 @@ public class CartController {
             )
     })
     @GetMapping("/get")
-    public ResponseEntity<List<CartDTO>> getCartItems(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<List<CartDTO>> getCartItems(@Parameter(description = "HTTP Servlet Request", required = true)
+                                                      HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(cartService.getCartItems(httpServletRequest));
     }
 
@@ -147,9 +147,11 @@ public class CartController {
     })
 
     @PostMapping("/add")
-    public ResponseEntity<AddToCartResponse> addToCart(CartRequest cartRequest,
+    public ResponseEntity<AddToCartResponse> addToCart(@Parameter(description = "Cart request body", required = true)
+                                                           @Valid @RequestBody CartRequest cartRequest,
+                                                       @Parameter(description = "HTTP Servlet Request", required = true)
                                                        HttpServletRequest httpServletRequest) {
-        return ResponseEntity.ok().body(cartService.addToCart(cartRequest,httpServletRequest));
+        return ResponseEntity.ok().body(cartService.addToCart(cartRequest, httpServletRequest));
     }
 
     @Operation(summary = "Remove item from cart")
@@ -206,11 +208,13 @@ public class CartController {
     @DeleteMapping("/remove")
     public ResponseEntity<RemoveFromCartResponse> removeFromCart(
             @RequestParam Long ticketId,
-            HttpServletRequest httpServletRequest) {
+            @Parameter(description = "HTTP Servlet Request", required = true) HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(cartService.removeFromCart(ticketId, httpServletRequest));
     }
+
     @GetMapping("/checkout")
-    public ResponseEntity<CheckoutResponse> calculateTotalPrice(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<CheckoutResponse> calculateTotalPrice(@Parameter(description = "HTTP Servlet Request", required = true)
+                                                                    HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(cartService.calculateTotalPrice(httpServletRequest));
     }
 
