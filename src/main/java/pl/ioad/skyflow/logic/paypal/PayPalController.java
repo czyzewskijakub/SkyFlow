@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
 
 
@@ -20,7 +19,6 @@ public class PayPalController {
 
     private final PayPalService service;
     private final UserRepository userRepository;
-    private final CartRepository cartRepository;
 
 
 
@@ -34,12 +32,7 @@ public class PayPalController {
 
     @PostMapping("/pay")
     public ResponseEntity<String> payment(@RequestParam Long userId) throws PayPalRESTException {
-        try {
-            service.preparePayment(userId);
-        } catch (PayPalRESTException e) {
-            throw new PayPalRESTException("Payment fail");
-        }
-        return ResponseEntity.ok("");
+            return ResponseEntity.ok(service.preparePayment(userId));
     }
 
     @GetMapping("/fail")
@@ -49,14 +42,10 @@ public class PayPalController {
 
     @GetMapping("/success")
     public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException {
-        try {
             Payment payment = service.executePayment(paymentId, payerId);
             if (payment.getState().equals("approved")) {
                 return "success.html";
             }
-        } catch (PayPalRESTException e) {
-            throw new PayPalRESTException("Payment fail");
-        }
         return "redirect:/";
     }
 

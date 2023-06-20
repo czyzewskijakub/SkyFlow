@@ -80,11 +80,15 @@ public class PayPalService {
 
 
     public Payment executePayment(String paymentId, String payerId) throws PayPalRESTException {
-        Payment payment = new Payment();
-        payment.setId(paymentId);
-        PaymentExecution paymentExecution = new PaymentExecution();
-        paymentExecution.setPayerId(payerId);
-        return payment.execute(apiContext, paymentExecution);
+        try {
+            Payment payment = new Payment();
+            payment.setId(paymentId);
+            PaymentExecution paymentExecution = new PaymentExecution();
+            paymentExecution.setPayerId(payerId);
+            return payment.execute(apiContext, paymentExecution);
+        } catch (PayPalRESTException e) {
+            throw new PayPalRESTException("Payment fail");
+        }
     }
 
     public String preparePayment(Long userId) throws PayPalRESTException {
@@ -98,21 +102,24 @@ public class PayPalService {
         if (totalPrice == 0) {
             throw new EntityNotFoundException("Total price is equal to 0.");
         }
-
-        Payment payment = createPayment(
-                totalPrice,
-                CURRENCY,
-                URL + CANCEL_URL,
-                URL + SUCCESS_URL);
-        for (Links link : payment.getLinks()) {
-            if (link.getRel().equals("approval_url")) {
-                String test = link.getHref();
-                System.out.println(test);
-                test = test.replace("https://", "");
-                return test;
+        try {
+            Payment payment = createPayment(
+                    totalPrice,
+                    CURRENCY,
+                    URL + CANCEL_URL,
+                    URL + SUCCESS_URL);
+            for (Links link : payment.getLinks()) {
+                if (link.getRel().equals("approval_url")) {
+                    String test = link.getHref();
+                    System.out.println(test);
+                    test = test.replace("https://", "");
+                    return test;
+                }
             }
+            return "";
+        } catch (PayPalRESTException e) {
+            throw new PayPalRESTException("Payment fail");
         }
-        return "";
     }
 
 
