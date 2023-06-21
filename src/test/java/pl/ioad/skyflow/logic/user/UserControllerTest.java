@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @SpringBootTest
 @Transactional
-public class UserServiceTest {
+public class UserControllerTest {
 
     @Autowired
     private UserService userService;
