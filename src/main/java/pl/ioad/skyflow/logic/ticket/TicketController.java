@@ -281,7 +281,8 @@ public class TicketController {
         return ResponseEntity.ok().body(ticketService.changeTicketStatus(ticketId, status));
     }
 
-    @GetMapping("/users")
+
+    @Operation(summary = "Retrieve all users tickets")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved all users tickets", content = @Content(
                     schema = @Schema(example = """
@@ -312,6 +313,7 @@ public class TicketController {
                     ))
             )
     })
+    @GetMapping("/users")
     public ResponseEntity<List<TicketDTO>> getAllUsersTickets() {
         return ResponseEntity.ok().body(ticketService.retrieveAllUsersTickets());
     }
