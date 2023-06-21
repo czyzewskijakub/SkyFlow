@@ -18,7 +18,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Install OpenSky
-        run: git clone https://github.com/openskynetwork/opensky-api.git && cd opensky-api/java && mvn clean install
+        run: git clone https://github.com/openskynetwork/opensky-api.git && cd opensky-api/java && mvn clean install -DskipTests
       - name: Build with Maven
         run: mvn install --file pom.xml
 #        run: mvn --batch-mode --update-snapshots install
