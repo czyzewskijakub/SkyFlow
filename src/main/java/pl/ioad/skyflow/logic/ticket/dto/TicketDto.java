@@ -7,7 +7,7 @@ import pl.ioad.skyflow.database.model.TravelClass;
 
 
 @Builder
-public record TicketDTO(
+public record TicketDto(
     @Schema(description = "ID number of flight ticket", example = "1")
     Long ticketId,
     @Schema(description = "price of ticket in EUR", example = "100")

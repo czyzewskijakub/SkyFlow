@@ -3,12 +3,11 @@ package pl.ioad.skyflow.logic.paypal;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.OAuthTokenCredential;
 import com.paypal.base.rest.PayPalRESTException;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 public class PayPalConfig {
@@ -27,13 +26,13 @@ public class PayPalConfig {
     }
 
     @Bean
-    public OAuthTokenCredential oAuthTokenCredential() {
+    public OAuthTokenCredential getAuthTokenCredential() {
         return new OAuthTokenCredential(clientId, clientSecret, paypalSdkConfig());
     }
 
     @Bean
     public APIContext apiContext() throws PayPalRESTException {
-        APIContext apiContext = new APIContext(oAuthTokenCredential().getAccessToken());
+        APIContext apiContext = new APIContext(getAuthTokenCredential().getAccessToken());
         apiContext.setConfigurationMap(paypalSdkConfig());
         return apiContext;
     }

@@ -1,11 +1,11 @@
 package pl.ioad.skyflow.logic.utils;
 
+import static java.time.ZoneOffset.UTC;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-
-import static java.time.ZoneOffset.UTC;
 
 public abstract class TimeUtils {
 

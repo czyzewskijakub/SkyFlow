@@ -1,18 +1,17 @@
-package pl.ioad.skyflow.logic.upcomingFlights;
+package pl.ioad.skyflow.logic.upcomingflights;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.UpcomingFlight;
 import pl.ioad.skyflow.database.repository.UpcomingFlightRepository;
 import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
-import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsDTO;
-import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsMapper;
-import pl.ioad.skyflow.logic.upcomingFlights.payload.request.UpcomingFlightRequest;
-import pl.ioad.skyflow.logic.upcomingFlights.payload.response.UpcomingFlightsResponse;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.List;
+import pl.ioad.skyflow.logic.upcomingflights.dto.UpcomingFlightsDto;
+import pl.ioad.skyflow.logic.upcomingflights.dto.UpcomingFlightsMapper;
+import pl.ioad.skyflow.logic.upcomingflights.payload.request.UpcomingFlightRequest;
+import pl.ioad.skyflow.logic.upcomingflights.payload.response.UpcomingFlightsResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class UpcomingFlightsService {
         return new UpcomingFlightsResponse("Succesfully added flight");
     }
 
-    public List<UpcomingFlightsDTO> getFlights(FlightSearchRequest request) {
+    public List<UpcomingFlightsDto> getFlights(FlightSearchRequest request) {
         var dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         try {
             return upcomingFlightRepository.findAllByDepartureAirportAndDepartureDateBetween(

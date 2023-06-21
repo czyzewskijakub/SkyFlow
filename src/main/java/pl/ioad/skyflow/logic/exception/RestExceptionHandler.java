@@ -1,6 +1,15 @@
 package pl.ioad.skyflow.logic.exception;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.ResponseEntity.status;
+
 import jakarta.persistence.EntityNotFoundException;
+import javax.naming.AuthenticationException;
+import javax.naming.InsufficientResourcesException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,13 +23,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import pl.ioad.skyflow.logic.exception.type.*;
+import pl.ioad.skyflow.logic.exception.type.AuthException;
+import pl.ioad.skyflow.logic.exception.type.DuplicatedDataException;
+import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
+import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
+import pl.ioad.skyflow.logic.exception.type.InvalidDataException;
+import pl.ioad.skyflow.logic.exception.type.ParameterException;
 
-import javax.naming.AuthenticationException;
-import javax.naming.InsufficientResourcesException;
 
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.http.ResponseEntity.status;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -43,6 +53,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.getClass().getSimpleName(),
                 ex.getLocalizedMessage()));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Object> handleException(Exception exception) {
+        return handleResponse(BAD_REQUEST, (RuntimeException) exception);
+    }
+
     @ExceptionHandler({InvalidBusinessArgumentException.class,
             ParameterException.class,
             InvalidDataException.class,
@@ -67,10 +83,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleResponse(NOT_FOUND, exception);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleException(Exception exception) {
-        return handleResponse(BAD_REQUEST, (RuntimeException) exception);
-    }
+
 
     private ResponseEntity<Object> handleResponse(HttpStatus httpStatus, RuntimeException exception) {
         return status(httpStatus).body(new ErrorResponse(

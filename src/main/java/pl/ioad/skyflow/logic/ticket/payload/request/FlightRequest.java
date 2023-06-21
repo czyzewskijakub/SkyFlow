@@ -8,7 +8,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 
-@JsonFormat(pattern="yyyy-MM-dd HH:mm")
+@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 @Getter
 @Setter
 @AllArgsConstructor

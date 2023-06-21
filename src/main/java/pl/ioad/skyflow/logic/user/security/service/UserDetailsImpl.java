@@ -1,13 +1,12 @@
 package pl.ioad.skyflow.logic.user.security.service;
 
+import java.util.Collection;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pl.ioad.skyflow.database.model.User;
-
-import java.util.Collection;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetails {
@@ -17,9 +16,8 @@ public class UserDetailsImpl implements UserDetails {
 
 
     public static UserDetailsImpl build(User user) {
-        List<String> roles = List.of(user.isAdmin() ?
-                new String[] {"ROLE_ADMIN", "ROLE_USER"} : new String[] {"ROLE_USER"});
-
+        List<String> roles = List.of(user.isAdmin()
+                ? new String[] {"ROLE_ADMIN", "ROLE_USER"} : new String[] {"ROLE_USER"});
         List<SimpleGrantedAuthority> authorities = roles.stream().map(SimpleGrantedAuthority::new).toList();
         return new UserDetailsImpl(user, authorities);
     }

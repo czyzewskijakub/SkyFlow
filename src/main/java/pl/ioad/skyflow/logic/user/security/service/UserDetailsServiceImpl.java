@@ -16,13 +16,15 @@ import pl.ioad.skyflow.database.repository.UserRepository;
 public class UserDetailsServiceImpl implements UserDetailsService {
     private static final Logger logger = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
     private final UserRepository userRepository;
+
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             var user = userRepository.findByEmail(username);
-            if (user.isPresent())
+            if (user.isPresent()) {
                 return UserDetailsImpl.build(user.get());
+            }
         } catch (UsernameNotFoundException e) {
             logger.error("Error while loading user: {}", e.getMessage());
         }
