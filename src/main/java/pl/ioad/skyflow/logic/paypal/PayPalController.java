@@ -78,18 +78,60 @@ public class PayPalController {
         return ResponseEntity.ok(service.preparePayment(userId));
     }
 
+    @Operation(summary = "Redirect to failed payment page")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment failed", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                    "message": "Payment failed"
+                                                }
+                                                """
+                    )
+            )),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    )
+            )),
+    })
     @GetMapping("/fail")
-    public String cancelPay() {
-        return "cancel.html";
+    public ResponseEntity<String> cancelPay() {
+        return ResponseEntity.ok().body("Payment Failed");
     }
 
+    @Operation(summary = "Redirect to succeed payment page")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Payment succeed", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                    "message": "Payment succeed"
+                                                }
+                                                """
+                    )
+            )),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(
+                    schema = @Schema(example = """
+                                                {
+                                                  "httpStatus": 400,
+                                                  "exception": "Exception",
+                                                  "message": "Bad request"
+                                                }
+                                                """
+                    )
+            )),
+    })
     @GetMapping("/success")
-    public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException {
+    public ResponseEntity<String> successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) throws PayPalRESTException {
             Payment payment = service.executePayment(paymentId, payerId);
             if (payment.getState().equals("approved")) {
-                return "success.html";
+                return ResponseEntity.ok().body("Payment Succeed");
             }
-        return "redirect:/";
+        return ResponseEntity.ok().body("redirect:/");
     }
 
 }
