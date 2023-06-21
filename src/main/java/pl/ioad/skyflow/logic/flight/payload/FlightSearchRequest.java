@@ -1,11 +1,11 @@
 package pl.ioad.skyflow.logic.flight.payload;
 
+import static pl.ioad.skyflow.logic.utils.TimeUtils.subtractDateTime;
+import static pl.ioad.skyflow.logic.utils.TimeUtils.toUnixTime;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import static pl.ioad.skyflow.logic.utils.TimeUtils.subtractDateTime;
-import static pl.ioad.skyflow.logic.utils.TimeUtils.toUnixTime;
 
 public record FlightSearchRequest(
         @Schema(description = "ICAO code of airport", example = "EDDF")

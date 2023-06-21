@@ -1,4 +1,4 @@
-package pl.ioad.skyflow.logic.upcomingFlights.dto;
+package pl.ioad.skyflow.logic.upcomingflights.dto;
 
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.UpcomingFlight;

@@ -1,8 +1,15 @@
 package pl.ioad.skyflow.logic.user;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.ACCEPTED;
+import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
+
 import com.google.common.base.Strings;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,12 +31,6 @@ import pl.ioad.skyflow.logic.user.payload.response.AuthorizationResponse;
 import pl.ioad.skyflow.logic.user.payload.response.SimpleResponse;
 import pl.ioad.skyflow.logic.user.payload.response.UserResponse;
 import pl.ioad.skyflow.logic.user.security.jwt.JwtUtils;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +72,7 @@ public class UserService {
         var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
         if (user.isPresent() && !user.get().isAdmin()) {
             throw new InvalidBusinessArgumentException("You cannot register new admin as standard user");
-        }   else if (userRepository.existsByEmail(request.getEmail())) {
+        } else if (userRepository.existsByEmail(request.getEmail())) {
             throw new ForbiddenException("Email is taken");
         }
 
@@ -137,7 +138,7 @@ public class UserService {
                 ACCEPTED.value(),
                 "User data updated",
                 userMapper.mapUser(currentUser)
-                );
+        );
     }
 
     public SimpleResponse changeUserAccountType(Long userId, boolean isAdmin) {
@@ -155,7 +156,7 @@ public class UserService {
         return new SimpleResponse(
                 ACCEPTED.value(),
                 message
-                );
+        );
     }
 
     public List<User> getAllUsers() {
@@ -163,16 +164,18 @@ public class UserService {
     }
 
     protected User validateToken(HttpServletRequest http) {
-        if (http == null)
+        if (http == null) {
             throw new ForbiddenException("Authorization header is null");
+        }
         String token = http.getHeader("Authorization");
         if (token == null) {
             throw new ForbiddenException("You have to be logged-in to your account to change data");
         }
         token = token.substring("Bearer ".length());
         var user = userRepository.findByEmail(jwtUtils.extractUsername(token));
-        if (user.isPresent())
+        if (user.isPresent()) {
             return user.get();
+        }
         throw new ForbiddenException("You are not authorized");
     }
 

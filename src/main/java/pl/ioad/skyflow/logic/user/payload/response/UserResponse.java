@@ -11,6 +11,7 @@ import pl.ioad.skyflow.logic.user.dto.UserDto;
 public class UserResponse extends SimpleResponse {
     @Schema(description = "User data")
     private UserDto user;
+
     public UserResponse(int status, String message, @Nullable UserDto user) {
         super(status, message);
         this.user = user;

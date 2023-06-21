@@ -11,7 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.ioad.skyflow.logic.cart.dto.CartDTO;
+import pl.ioad.skyflow.logic.cart.dto.CartDto;
 import pl.ioad.skyflow.logic.cart.payload.request.CartRequest;
 import pl.ioad.skyflow.logic.cart.payload.response.AddToCartResponse;
 import pl.ioad.skyflow.logic.cart.payload.response.CheckoutResponse;
@@ -79,7 +79,7 @@ public class CartController {
             )
     })
     @GetMapping("/get")
-    public ResponseEntity<List<CartDTO>> getCartItems(@Parameter(description = "HTTP Servlet Request", required = true)
+    public ResponseEntity<List<CartDto>> getCartItems(@Parameter(description = "HTTP Servlet Request", required = true)
                                                       HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(cartService.getCartItems(httpServletRequest));
     }
