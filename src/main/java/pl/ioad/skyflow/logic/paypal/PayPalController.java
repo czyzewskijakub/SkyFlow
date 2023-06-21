@@ -7,29 +7,23 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import pl.ioad.skyflow.database.repository.UserRepository;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/paypal")
+@CrossOrigin(value = "*", maxAge = 3600)
 public class PayPalController {
 
 
     private final PayPalService service;
-    private final UserRepository userRepository;
-
-    @GetMapping("/payment")
-    public String home(@RequestParam Long userId) {
-        if (userRepository.findById(userId).isEmpty()) {
-            throw new EntityNotFoundException("User not found");
-        }
-        return "home.html";
-    }
 
     @Operation(summary = "Pay for flight")
     @ApiResponses(value = {
