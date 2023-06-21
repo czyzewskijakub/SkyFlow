@@ -51,7 +51,7 @@ class FlightControllerTest {
     }
 
     @Test
-    public void test() throws Exception {
+    public void shouldReturnFlightsInGivenTimeRange() throws Exception {
         var request = post(UPCOMING_FLIGHTS_ENDPOINT)
                 .header("Authorization", this.token)
                 .contentType(APPLICATION_JSON)
