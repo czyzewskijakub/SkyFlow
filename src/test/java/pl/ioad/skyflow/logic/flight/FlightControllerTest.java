@@ -11,10 +11,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
 import pl.ioad.skyflow.logic.user.payload.request.LoginRequest;
+import pl.ioad.skyflow.logic.user.payload.response.AuthorizationResponse;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,9 +29,11 @@ class FlightControllerTest {
 
     private static final FlightSearchRequest FLIGHT_SEARCH_REQUEST = new FlightSearchRequest(
             "EDDF",
-            "1517227200",
-            "1517230800"
+            "2018-01-29 13:00",
+            "2018-01-29 14:00"
     );
+
+    private static final String UPCOMING_FLIGHTS_ENDPOINT = "/upcomingFlights/getAll";
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -49,24 +51,27 @@ class FlightControllerTest {
     }
 
     @Test
-    public void test() throws Exception {
-        var request = post("/flights/find")
+    public void shouldReturnFlightsInGivenTimeRange() throws Exception {
+        var request = post(UPCOMING_FLIGHTS_ENDPOINT)
                 .header("Authorization", this.token)
                 .contentType(APPLICATION_JSON)
                 .content(mockRequestBody(FLIGHT_SEARCH_REQUEST));
         this.mockMvc.perform(request)
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(50));
+                .andExpect(jsonPath("$.length()").value(44));
     }
 
     private String login() {
-        var request = post("/user/login")
+        var request = post("/users/login")
                 .contentType(APPLICATION_JSON)
                 .content(mockRequestBody(CREDENTIALS));
         try {
-            return this.mockMvc.perform(request).andReturn().toString();
+            var response = this.mockMvc.perform(request)
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+            return "Bearer " + mapper.readValue(response, AuthorizationResponse.class).getToken();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

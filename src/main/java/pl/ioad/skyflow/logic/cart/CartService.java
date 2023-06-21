@@ -2,14 +2,16 @@ package pl.ioad.skyflow.logic.cart;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.Cart;
 import pl.ioad.skyflow.database.model.Ticket;
-import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.TicketRepository;
-import pl.ioad.skyflow.logic.cart.dto.CartDTO;
+import pl.ioad.skyflow.logic.cart.dto.CartDto;
 import pl.ioad.skyflow.logic.cart.dto.CartMapper;
 import pl.ioad.skyflow.logic.cart.payload.request.CartRequest;
 import pl.ioad.skyflow.logic.cart.payload.response.AddToCartResponse;
@@ -18,10 +20,6 @@ import pl.ioad.skyflow.logic.cart.payload.response.RemoveFromCartResponse;
 import pl.ioad.skyflow.logic.exception.type.DuplicatedDataException;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.ticket.TicketService;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +71,7 @@ public class CartService {
         throw new ForbiddenException("Forbidden to delete ticket");
     }
 
-    public List<CartDTO> getCartItems(HttpServletRequest httpServletRequest) {
+    public List<CartDto> getCartItems(HttpServletRequest httpServletRequest) {
         return cartRepository.findAll().stream().filter(ticket -> ticket.getUser() == ticketService.extractUser(httpServletRequest))
                 .map(cartMapper::map).toList();
     }

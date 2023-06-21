@@ -8,16 +8,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import pl.ioad.skyflow.logic.cart.dto.CartDTO;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import pl.ioad.skyflow.logic.cart.dto.CartDto;
 import pl.ioad.skyflow.logic.cart.payload.request.CartRequest;
 import pl.ioad.skyflow.logic.cart.payload.response.AddToCartResponse;
 import pl.ioad.skyflow.logic.cart.payload.response.CheckoutResponse;
 import pl.ioad.skyflow.logic.cart.payload.response.RemoveFromCartResponse;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
@@ -79,7 +84,7 @@ public class CartController {
             )
     })
     @GetMapping("/get")
-    public ResponseEntity<List<CartDTO>> getCartItems(@Parameter(description = "HTTP Servlet Request", required = true)
+    public ResponseEntity<List<CartDto>> getCartItems(@Parameter(description = "HTTP Servlet Request", required = true)
                                                       HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(cartService.getCartItems(httpServletRequest));
     }

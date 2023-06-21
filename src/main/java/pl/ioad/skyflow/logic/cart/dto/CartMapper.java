@@ -5,8 +5,8 @@ import pl.ioad.skyflow.database.model.Cart;
 
 @Service
 public class CartMapper {
-    public CartDTO map(Cart cart) {
-        return new CartDTO.CartDTOBuilder()
+    public CartDto map(Cart cart) {
+        return new CartDto.CartDtoBuilder()
                 .ticketId(cart.getTicket().getTicketId())
                 .additionDate(cart.getAdditionDate())
                 .build();

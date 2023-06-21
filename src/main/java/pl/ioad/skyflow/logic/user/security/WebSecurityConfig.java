@@ -20,13 +20,13 @@ import pl.ioad.skyflow.logic.user.security.jwt.AuthTokenFilter;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    private final String[][] ADMIN_ONLY = {
+    private final String[][] adminOnly = {
             {"/users/register/admin", "/tickets/classes/{ticketId}"},
             {"/users/all", "/users/type", "/upcomingFlights/add", "/upcomingFlights/clear",
                     "/flights/find", "/tickets/users"}
     };
 
-    private final String[] SWAGGER_WHITELIST = {
+    private final String[] swaggerWhitelist = {
            "/v3/api-docs.yaml", "/v3/api-docs/**","/swagger-ui/**", "/swagger-ui.html"
     };
 
@@ -58,9 +58,9 @@ public class WebSecurityConfig {
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeHttpRequests()
-                    .requestMatchers(ADMIN_ONLY[0]).hasRole("ADMIN")
-                    .requestMatchers(SWAGGER_WHITELIST).permitAll()
-                    .requestMatchers(ADMIN_ONLY[1]).hasRole("ADMIN")
+                    .requestMatchers(adminOnly[0]).hasRole("ADMIN")
+                    .requestMatchers(swaggerWhitelist).permitAll()
+                    .requestMatchers(adminOnly[1]).hasRole("ADMIN")
                     .requestMatchers("/**").permitAll()
                 .anyRequest().authenticated()
                 .and().addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);

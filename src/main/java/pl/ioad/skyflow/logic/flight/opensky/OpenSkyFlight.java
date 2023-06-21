@@ -1,9 +1,9 @@
 package pl.ioad.skyflow.logic.flight.opensky;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
 import static pl.ioad.skyflow.logic.utils.TimeUtils.addDateTime;
 import static pl.ioad.skyflow.logic.utils.TimeUtils.toDateTime;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record OpenSkyFlight(
         @Schema(description = "Unique ICAO 24-bit address of the transponder in hex string representation. All letters are lower case.", example = "3c4ad0")
