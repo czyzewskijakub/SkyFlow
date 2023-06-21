@@ -35,9 +35,9 @@ public class FlightController {
     })
     @PostMapping(value = "/find", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<UpcomingFlight>> findDepartures(@Parameter(description = "Flight search request", required = true)
-                                                       @RequestBody FlightSearchRequest request) {
-
-        return ok().body(flightService.findFlight(request));
+                                                               @RequestBody FlightSearchRequest request) {
+        var openSkyRequest = request.withSubtractedTime().withUnixTime();
+        return ok().body(flightService.findFlight(openSkyRequest));
     }
 
 }

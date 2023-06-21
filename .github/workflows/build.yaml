@@ -1,10 +1,14 @@
 name: Java CI
 
-on: [push]
+on: [ push ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      PG_USERNAME: ${{ secrets.PG_USERNAME }}
+      PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
 
     steps:
       - uses: actions/checkout@v3
@@ -13,8 +17,12 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
       - name: Install OpenSky
-        run: git clone https://github.com/openskynetwork/opensky-api.git && cd opensky-api/java && mvn clean install
+        run: git clone https://github.com/openskynetwork/opensky-api.git && cd opensky-api/java && mvn clean install -DskipTests
+
+      - name: Generate JWT Secret
+        run: echo "JWT_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)" >> $GITHUB_ENV
+
       - name: Build with Maven
-        run: mvn install -DskipTests --file pom.xml
-#        run: mvn --batch-mode --update-snapshots install
+        run: mvn install --file pom.xml

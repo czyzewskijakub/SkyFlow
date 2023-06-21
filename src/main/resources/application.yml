@@ -2,8 +2,8 @@ spring:
     application:
       name: SkyFlow
     datasource:
-      username:
-      password:
+      username: ${PG_USERNAME}
+      password: ${PG_PASSWORD}
       url: jdbc:postgresql://skyflow-db.postgres.database.azure.com:5432/postgres?user=${spring.datasource.username}&password=${spring.datasource.password}&sslmode=require
       driver-class-name: org.postgresql.Driver
     jpa:
@@ -23,8 +23,8 @@ spring:
         continue-on-error: true
 jwt:
   variables:
-    jwtSecret:
-    jwtExpirationMs:
+    jwtSecret: ${JWT_SECRET}
+    jwtExpirationMs: 999999999
 opensky:
   username:
   password:
