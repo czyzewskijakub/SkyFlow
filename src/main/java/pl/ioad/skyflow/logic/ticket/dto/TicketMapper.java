@@ -5,8 +5,8 @@ import pl.ioad.skyflow.database.model.Ticket;
 
 @Service
 public class TicketMapper {
-    public TicketDTO mapTicket(Ticket ticket) {
-        return new TicketDTO.TicketDTOBuilder()
+    public TicketDto mapTicket(Ticket ticket) {
+        return new TicketDto.TicketDtoBuilder()
                 .ticketId(ticket.getTicketId())
                 .price(ticket.getPrice())
                 .travelClass(ticket.getTravelClass())

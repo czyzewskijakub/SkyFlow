@@ -2,19 +2,18 @@ package pl.ioad.skyflow.logic.upcomingflights.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
-
 import java.util.Date;
+import lombok.NonNull;
 
-public record UpcomingFlightRequest (
+public record UpcomingFlightRequest(
 
     @NonNull
     @Schema(description = "id of vehicle", example = "3c4ad0")
     String icao24,
 
     @NonNull
-    @Schema(description = "Date of departure", pattern = "yyyy-MM-dd HH:mm" )
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm")
+    @Schema(description = "Date of departure", pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     Date departureDate,
 
     @NonNull

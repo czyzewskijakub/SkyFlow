@@ -8,16 +8,22 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import pl.ioad.skyflow.database.model.TicketStatus;
 import pl.ioad.skyflow.database.model.TravelClass;
-import pl.ioad.skyflow.logic.ticket.dto.TicketDTO;
+import pl.ioad.skyflow.logic.ticket.dto.TicketDto;
 import pl.ioad.skyflow.logic.ticket.payload.request.FlightRequest;
 import pl.ioad.skyflow.logic.ticket.payload.response.TicketResponse;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
@@ -201,7 +207,7 @@ public class TicketController {
             )
     })
     @GetMapping
-    public ResponseEntity<List<TicketDTO>> getTickets(@Parameter(description = "HTTP Servlet Request", required = true)
+    public ResponseEntity<List<TicketDto>> getTickets(@Parameter(description = "HTTP Servlet Request", required = true)
                                                                    HttpServletRequest httpServletRequest) {
         return ResponseEntity.ok().body(ticketService.retrieveTickets(httpServletRequest));
     }
@@ -314,7 +320,7 @@ public class TicketController {
             )
     })
     @GetMapping("/users")
-    public ResponseEntity<List<TicketDTO>> getAllUsersTickets() {
+    public ResponseEntity<List<TicketDto>> getAllUsersTickets() {
         return ResponseEntity.ok().body(ticketService.retrieveAllUsersTickets());
     }
 

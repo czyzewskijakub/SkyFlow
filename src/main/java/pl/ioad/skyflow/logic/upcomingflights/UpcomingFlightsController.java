@@ -1,4 +1,6 @@
-package pl.ioad.skyflow.logic.upcomingFlights;
+package pl.ioad.skyflow.logic.upcomingflights;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -7,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,13 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
-import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsDTO;
-import pl.ioad.skyflow.logic.upcomingFlights.payload.request.UpcomingFlightRequest;
-import pl.ioad.skyflow.logic.upcomingFlights.payload.response.UpcomingFlightsResponse;
-
-import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import pl.ioad.skyflow.logic.upcomingflights.dto.UpcomingFlightsDto;
+import pl.ioad.skyflow.logic.upcomingflights.payload.request.UpcomingFlightRequest;
+import pl.ioad.skyflow.logic.upcomingflights.payload.response.UpcomingFlightsResponse;
 
 @RestController
 @RequestMapping("/upcomingFlights")
@@ -89,7 +88,7 @@ public class UpcomingFlightsController {
 
     @Operation(summary = "Get all flights")
     @PostMapping(value = "/getAll", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<UpcomingFlightsDTO>> getFlights(@Parameter(description = "Flight search request", required = true)
+    public ResponseEntity<List<UpcomingFlightsDto>> getFlights(@Parameter(description = "Flight search request", required = true)
                                                                @RequestBody FlightSearchRequest request) {
         return ResponseEntity.ok().body(upcomingFlightsService.getFlights(request));
     }

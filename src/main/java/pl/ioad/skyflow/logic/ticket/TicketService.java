@@ -1,10 +1,21 @@
 package pl.ioad.skyflow.logic.ticket;
 
+import static pl.ioad.skyflow.database.model.TicketStatus.CANCELLED;
+import static pl.ioad.skyflow.database.model.TicketStatus.RESERVED;
+
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.ioad.skyflow.database.model.*;
+import pl.ioad.skyflow.database.model.Cart;
+import pl.ioad.skyflow.database.model.Ticket;
+import pl.ioad.skyflow.database.model.TicketStatus;
+import pl.ioad.skyflow.database.model.TravelClass;
+import pl.ioad.skyflow.database.model.UpcomingFlight;
+import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.TicketRepository;
 import pl.ioad.skyflow.database.repository.UpcomingFlightRepository;
@@ -13,19 +24,11 @@ import pl.ioad.skyflow.logic.exception.type.DuplicatedDataException;
 import pl.ioad.skyflow.logic.exception.type.ForbiddenException;
 import pl.ioad.skyflow.logic.exception.type.InvalidBusinessArgumentException;
 import pl.ioad.skyflow.logic.exception.type.InvalidDataException;
-import pl.ioad.skyflow.logic.ticket.dto.TicketDTO;
+import pl.ioad.skyflow.logic.ticket.dto.TicketDto;
 import pl.ioad.skyflow.logic.ticket.dto.TicketMapper;
 import pl.ioad.skyflow.logic.ticket.payload.request.FlightRequest;
 import pl.ioad.skyflow.logic.ticket.payload.response.TicketResponse;
 import pl.ioad.skyflow.logic.user.security.jwt.JwtUtils;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import static pl.ioad.skyflow.database.model.TicketStatus.CANCELLED;
-import static pl.ioad.skyflow.database.model.TicketStatus.RESERVED;
-
 
 @Service
 @RequiredArgsConstructor
@@ -100,7 +103,7 @@ public class TicketService {
         return new TicketResponse("Successfully canceled flight");
     }
 
-    public List<TicketDTO> retrieveTickets(HttpServletRequest http) {
+    public List<TicketDto> retrieveTickets(HttpServletRequest http) {
         User user = extractUser(http);
         return ticketRepository.findAll().stream()
                 .filter(e -> e.getUser().getUserId().equals(user.getUserId()))
@@ -124,7 +127,7 @@ public class TicketService {
         return new TicketResponse("Successfully changed ticket status");
     }
 
-    public List<TicketDTO> retrieveAllUsersTickets() {
+    public List<TicketDto> retrieveAllUsersTickets() {
         return ticketRepository.findAll().stream().map(ticketMapper::mapTicket).toList();
     }
 

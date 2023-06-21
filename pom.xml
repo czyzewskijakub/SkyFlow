@@ -116,7 +116,25 @@
             <artifactId>guava</artifactId>
             <version>32.0.1-jre</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.0.Final</version>
+        </dependency>
     </dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.2.1</version>
+                <configuration>
+                    <configLocation>checkstyle.xml</configLocation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <build>
         <plugins>
@@ -135,6 +153,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+
                 <version>3.1.1</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>

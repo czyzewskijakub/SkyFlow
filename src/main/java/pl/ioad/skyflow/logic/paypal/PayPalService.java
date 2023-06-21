@@ -1,9 +1,24 @@
 package pl.ioad.skyflow.logic.paypal;
 
-import com.paypal.api.payments.*;
+import static pl.ioad.skyflow.database.model.TicketStatus.VALID;
+
+import com.paypal.api.payments.Amount;
+import com.paypal.api.payments.Links;
+import com.paypal.api.payments.Payer;
+import com.paypal.api.payments.Payment;
+import com.paypal.api.payments.PaymentExecution;
+import com.paypal.api.payments.RedirectUrls;
+import com.paypal.api.payments.Transaction;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.Ticket;
@@ -12,14 +27,6 @@ import pl.ioad.skyflow.database.repository.CartRepository;
 import pl.ioad.skyflow.database.repository.TicketRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static pl.ioad.skyflow.database.model.TicketStatus.VALID;
 
 @Service
 @RequiredArgsConstructor
@@ -107,6 +114,8 @@ public class PayPalService {
         double totalPrice = cartRepository.findAll().stream().filter(ticket ->
                         ticket.getUser() == user.get())
                 .mapToDouble(cart -> cart.getTicket().getPrice()).sum();
+        cartRepository.deleteAll(cartRepository.findAll().stream().filter(ticket ->
+                ticket.getUser() == user.get()).collect(Collectors.toList()));
         if (totalPrice == 0) {
             throw new EntityNotFoundException("Total price is equal to 0.");
         }

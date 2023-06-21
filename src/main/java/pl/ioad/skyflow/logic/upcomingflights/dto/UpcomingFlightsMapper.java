@@ -6,8 +6,8 @@ import pl.ioad.skyflow.database.model.UpcomingFlight;
 
 @Service
 public class UpcomingFlightsMapper {
-    public UpcomingFlightsDTO map(UpcomingFlight flight) {
-        return new UpcomingFlightsDTO.UpcomingFlightsDTOBuilder()
+    public UpcomingFlightsDto map(UpcomingFlight flight) {
+        return new UpcomingFlightsDto.UpcomingFlightsDtoBuilder()
                 .icao24(flight.getIcao24())
                 .departureDate(flight.getDepartureDate())
                 .arrivalAirport(flight.getArrivalAirport())
