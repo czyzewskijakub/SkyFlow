@@ -5,11 +5,11 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import pl.ioad.skyflow.database.model.Ticket;
 import pl.ioad.skyflow.database.model.User;
 import pl.ioad.skyflow.database.repository.CartRepository;
+import pl.ioad.skyflow.database.repository.TicketRepository;
 import pl.ioad.skyflow.database.repository.UserRepository;
 
 import java.math.BigDecimal;
@@ -18,6 +18,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static pl.ioad.skyflow.database.model.TicketStatus.VALID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class PayPalService {
 
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final TicketRepository ticketRepository;
 
     public static final String SUCCESS_URL = "/success";
     public static final String CANCEL_URL = "/fail";
@@ -96,6 +99,11 @@ public class PayPalService {
         if (user.isEmpty()) {
             throw new EntityNotFoundException("User not found");
         }
+        List<Ticket> userTickets = ticketRepository.findAll()
+                .stream()
+                .filter(ticket -> ticket.getUser() == user.get())
+                .toList();
+
         double totalPrice = cartRepository.findAll().stream().filter(ticket ->
                         ticket.getUser() == user.get())
                 .mapToDouble(cart -> cart.getTicket().getPrice()).sum();
@@ -111,8 +119,12 @@ public class PayPalService {
             for (Links link : payment.getLinks()) {
                 if (link.getRel().equals("approval_url")) {
                     String test = link.getHref();
-                    System.out.println(test);
                     test = test.replace("https://", "");
+                    userTickets.forEach(ticket -> {
+                        ticket.setStatus(VALID);
+                        ticketRepository.save(ticket);
+                    });
+
                     return test;
                 }
             }
