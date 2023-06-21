@@ -22,7 +22,7 @@ jobs:
         run: git clone https://github.com/openskynetwork/opensky-api.git && cd opensky-api/java && mvn clean install -DskipTests
 
       - name: Generate JWT Secret
-        run: echo "JWT_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 32)" >> $GITHUB_ENV
+        run: echo "JWT_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64)" >> $GITHUB_ENV
 
       - name: Build with Maven
         run: mvn install --file pom.xml
