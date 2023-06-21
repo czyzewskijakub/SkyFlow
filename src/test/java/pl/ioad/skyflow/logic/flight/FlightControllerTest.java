@@ -22,8 +22,8 @@ class FlightControllerTest {
 
     private static final FlightSearchRequest FLIGHT_SEARCH_REQUEST = new FlightSearchRequest(
             "EDDF",
-            "2018-01-29 13:00",
-            "2018-01-29 14:00"
+            "2023-06-24 04:00",
+            "2023-06-24 06:00"
     );
 
     private static final String UPCOMING_FLIGHTS_ENDPOINT = "/upcomingFlights/getAll";
@@ -54,6 +54,6 @@ class FlightControllerTest {
         this.mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(44));
+                .andExpect(jsonPath("$.length()").value(13));
     }
 }
