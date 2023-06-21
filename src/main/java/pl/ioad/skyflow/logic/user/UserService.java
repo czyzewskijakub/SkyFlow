@@ -163,6 +163,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public void deleteUserByEmail(String email) {
+        userRepository.deleteByEmail(email);
+    }
+
     protected User validateToken(HttpServletRequest http) {
         if (http == null) {
             throw new ForbiddenException("Authorization header is null");
