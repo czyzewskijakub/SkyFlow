@@ -14,11 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
 import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsDTO;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.request.UpcomingFlightRequest;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.response.UpcomingFlightsResponse;
 
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("/upcomingFlights")
@@ -30,50 +33,50 @@ public class UpcomingFlightsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully added flight", content = @Content(
                     schema = @Schema(example = """
-                                                {
-                                                  "message": "Successfully added flight"
-                                                }
-                                                """
+                            {
+                              "message": "Successfully added flight"
+                            }
+                            """
                     ))
             ),
             @ApiResponse(responseCode = "400", description = "Not correct request", content = @Content(
                     schema = @Schema(example = """
-                                                {
-                                                  "httpStatus": 400,
-                                                  "exception": "Exception",
-                                                  "message": "Bad request"
-                                                }
-                                                """
+                            {
+                              "httpStatus": 400,
+                              "exception": "Exception",
+                              "message": "Bad request"
+                            }
+                            """
                     ))
             ),
             @ApiResponse(responseCode = "401", description = "You are not authorized to add a flight", content = @Content(
                     schema = @Schema(example = """
-                                                {
-                                                  "httpStatus": 401,
-                                                  "exception": "Exception",
-                                                  "message": "Unauthorized"
-                                                }
-                                                """
+                            {
+                              "httpStatus": 401,
+                              "exception": "Exception",
+                              "message": "Unauthorized"
+                            }
+                            """
                     ))
             ),
             @ApiResponse(responseCode = "403", description = "You cannot perform the operation", content = @Content(
                     schema = @Schema(example = """
-                                                {
-                                                  "httpStatus": 403,
-                                                  "exception": "Exception",
-                                                  "message": "Forbidden"
-                                                }
-                                                """
+                            {
+                              "httpStatus": 403,
+                              "exception": "Exception",
+                              "message": "Forbidden"
+                            }
+                            """
                     ))
             ),
             @ApiResponse(responseCode = "404", description = "Flight not found", content = @Content(
                     schema = @Schema(example = """
-                                                {
-                                                  "httpStatus": 404,
-                                                  "exception": "Exception",
-                                                  "message": "Not found"
-                                                }
-                                                """
+                            {
+                              "httpStatus": 404,
+                              "exception": "Exception",
+                              "message": "Not found"
+                            }
+                            """
                     ))
             )
     })
@@ -85,9 +88,10 @@ public class UpcomingFlightsController {
     }
 
     @Operation(summary = "Get all flights")
-    @GetMapping("/getAll")
-    public ResponseEntity<List<UpcomingFlightsDTO>> getFlights() {
-        return ResponseEntity.ok().body(upcomingFlightsService.getFlights());
+    @PostMapping(value = "/getAll", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<UpcomingFlightsDTO>> getFlights(@Parameter(description = "Flight search request", required = true)
+                                                               @RequestBody FlightSearchRequest request) {
+        return ResponseEntity.ok().body(upcomingFlightsService.getFlights(request));
     }
 
     @Operation(summary = "Clear all flights")

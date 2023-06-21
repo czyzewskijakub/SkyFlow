@@ -4,16 +4,20 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.ioad.skyflow.database.model.UpcomingFlight;
 import pl.ioad.skyflow.database.repository.UpcomingFlightRepository;
+import pl.ioad.skyflow.logic.flight.payload.FlightSearchRequest;
 import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsDTO;
 import pl.ioad.skyflow.logic.upcomingFlights.dto.UpcomingFlightsMapper;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.request.UpcomingFlightRequest;
 import pl.ioad.skyflow.logic.upcomingFlights.payload.response.UpcomingFlightsResponse;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UpcomingFlightsService {
+
     private final UpcomingFlightRepository upcomingFlightRepository;
     private final UpcomingFlightsMapper upcomingFlightsMapper;
 
@@ -28,8 +32,19 @@ public class UpcomingFlightsService {
         return new UpcomingFlightsResponse("Succesfully added flight");
     }
 
-    public List<UpcomingFlightsDTO> getFlights() {
-        return upcomingFlightRepository.findAll().stream().map(upcomingFlightsMapper::map).toList();
+    public List<UpcomingFlightsDTO> getFlights(FlightSearchRequest request) {
+        var dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        try {
+            return upcomingFlightRepository.findAllByDepartureAirportAndDepartureDateBetween(
+                            request.departureAirport(),
+                            dateFormatter.parse(request.begin()),
+                            dateFormatter.parse(request.end()))
+                    .stream()
+                    .map(upcomingFlightsMapper::map)
+                    .toList();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public UpcomingFlightsResponse clearFlights() {

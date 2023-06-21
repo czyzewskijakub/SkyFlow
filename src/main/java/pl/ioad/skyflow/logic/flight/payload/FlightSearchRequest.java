@@ -20,14 +20,15 @@ public record FlightSearchRequest(
         @NotBlank
         String end) {
 
-    public FlightSearchRequest(String departureAirport, String begin, String end) {
-        begin = subtractDateTime(begin);
-        begin = toUnixTime(begin);
-        end = subtractDateTime(end);
-        end = toUnixTime(end);
+    public FlightSearchRequest withSubtractedTime() {
+        var begin = subtractDateTime(this.begin);
+        var end = subtractDateTime(this.end);
+        return new FlightSearchRequest(this.departureAirport, begin, end);
+    }
 
-        this.departureAirport = departureAirport;
-        this.begin = begin;
-        this.end = end;
+    public FlightSearchRequest withUnixTime() {
+        var begin = toUnixTime(this.begin);
+        var end = toUnixTime(this.end);
+        return new FlightSearchRequest(this.departureAirport, begin, end);
     }
 }
